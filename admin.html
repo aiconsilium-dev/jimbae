@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>짐빼 Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--orange:#E85D2A;--bg:#fff;--sidebar:#fafafa;--border:#e5e7eb;--text:#111;--muted:#6b7280;--green:#16a34a;--blue:#2563eb;--red:#dc2626;--yellow:#eab308}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;color:var(--text);background:var(--bg);display:flex;min-height:100vh}
+.sidebar{width:240px;min-height:100vh;background:var(--sidebar);border-right:1px solid var(--border);position:fixed;top:0;left:0;z-index:100;transition:transform .2s}
+.sidebar-logo{padding:24px 20px;font-size:18px;font-weight:700;color:var(--orange);border-bottom:1px solid var(--border)}
+.sidebar-menu{list-style:none;padding:12px 0}
+.sidebar-menu li{padding:10px 20px;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s}
+.sidebar-menu li:hover{background:#f3f4f6;color:var(--text)}
+.sidebar-menu li.active{color:var(--orange);font-weight:600;background:#fff5f0;border-right:3px solid var(--orange)}
+.main{margin-left:240px;flex:1;padding:32px;min-height:100vh;width:calc(100% - 240px)}
+.page{display:none}
+.page.active{display:block}
+.page-title{font-size:24px;font-weight:700;margin-bottom:24px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--orange);color:#fff;border:none;width:40px;height:40px;cursor:pointer;font-size:20px;border-radius:0}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}
+/* Cards */
+.card{border:1px solid var(--border);border-radius:0;padding:20px;margin-bottom:16px;background:#fff}
+.card-title{font-size:16px;font-weight:600;margin-bottom:12px}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi{border:1px solid var(--border);padding:20px;text-align:center}
+.kpi-value{font-size:28px;font-weight:700;color:var(--orange)}
+.kpi-label{color:var(--muted);margin-top:4px;font-size:13px}
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border)}
+th{font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase}
+tr:hover{background:#fafafa}
+/* Pill */
+.pill{display:inline-block;padding:6px 18px;border-radius:100px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
+.pill-orange{background:var(--orange);color:#fff}
+.pill-orange:hover{background:#d14e1f}
+.pill-outline{background:#fff;color:var(--text);border:1px solid var(--border)}
+.pill-outline:hover{border-color:var(--orange);color:var(--orange)}
+/* Status pills */
+.status{padding:4px 12px;border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;border:none;display:inline-block}
+.status-unread{background:#fef3c7;color:#92400e}
+.status-consulting{background:#dbeafe;color:#1e40af}
+.status-done{background:#dcfce7;color:#166534}
+.status-closed{background:#f3f4f6;color:#6b7280}
+/* Bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:12px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;background:var(--orange);border-radius:0;transition:height .3s}
+.bar-label{font-size:11px;color:var(--muted)}
+.bar-val{font-size:11px;font-weight:600}
+/* Form */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:600;margin-bottom:6px;font-size:13px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:0;font-size:14px;font-family:inherit}
+.form-group textarea{resize:vertical;min-height:80px}
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+/* Actions row */
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+/* Item list */
+.item-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)}
+.item-row:last-child{border-bottom:none}
+.item-row .text{flex:1}
+.btn-sm{padding:4px 10px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:12px;border-radius:0}
+.btn-sm:hover{border-color:var(--orange);color:var(--orange)}
+.btn-del{color:var(--red);border-color:var(--red)}
+.btn-del:hover{background:#fef2f2}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;width:90%;max-width:560px;max-height:85vh;overflow-y:auto;padding:28px;border:1px solid var(--border)}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:20px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+/* Preview */
+.hero-preview{background:#1a1a1a;color:#fff;padding:40px;margin-bottom:20px;text-align:center}
+.hero-preview .main-copy{font-size:28px;font-weight:700}
+.hero-preview .sub-copy{font-size:28px;font-weight:700;color:var(--orange)}
+.hero-preview .desc{color:#aaa;margin-top:12px;font-size:14px}
+.hero-preview .cta-preview{display:inline-block;margin-top:16px;padding:10px 28px;background:var(--orange);color:#fff;border-radius:100px;font-weight:600}
+/* Service cards */
+.svc-card{border:1px solid var(--border);padding:16px}
+.svc-card .svc-title{font-weight:600;margin-bottom:8px}
+.svc-card .svc-desc{color:var(--muted);font-size:13px;margin-bottom:8px}
+.svc-card .svc-targets{font-size:12px;color:var(--muted)}
+.svc-actions{display:flex;gap:4px;margin-top:10px}
+/* Expand row */
+.expand-content{display:none;padding:12px 0;background:#fafafa;border-bottom:1px solid var(--border)}
+.expand-content.show{display:block}
+.expand-content td{padding:12px}
+/* Tag */
+.tag{display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:500;background:#fff5f0;color:var(--orange);margin-bottom:6px}
+/* Responsive */
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.hamburger{display:block}
+.overlay.show{display:block}
+.main{margin-left:0;width:100%;padding:20px;padding-top:64px}
+.kpi-grid{grid-template-columns:1fr 1fr}
+.grid-2,.grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-logo">짐빼 Admin</div>
+<ul class="sidebar-menu" id="menu">
+<li class="active" data-page="dashboard">대시보드</li>
+<li data-page="hero">히어로 관리</li>
+<li data-page="services">서비스 관리</li>
+<li data-page="pricing">요금 관리</li>
+<li data-page="cases">성공사례 관리</li>
+<li data-page="lawyers">변호사 관리</li>
+<li data-page="faq">FAQ 관리</li>
+<li data-page="inquiries">상담문의 관리</li>
+<li data-page="process">진행절차 관리</li>
+<li data-page="settings">사이트 설정</li>
+</ul>
+</nav>
+<main class="main">
+<!-- Dashboard -->
+<div class="page active" id="page-dashboard">
+<h1 class="page-title">대시보드</h1>
+<div class="kpi-grid">
+<div class="kpi"><div class="kpi-value">28</div><div class="kpi-label">이번달 상담문의</div></div>
+<div class="kpi"><div class="kpi-value">19</div><div class="kpi-label">카톡 전환</div></div>
+<div class="kpi"><div class="kpi-value">8</div><div class="kpi-label">수임 완료</div></div>
+<div class="kpi"><div class="kpi-value">1,247</div><div class="kpi-label">사이트 방문</div></div>
+</div>
+<div class="grid-2">
+<div class="card">
+<div class="card-title">최근 상담문의</div>
+<table>
+<thead><tr><th>이름</th><th>연락처</th><th>유형</th><th>날짜</th><th>상태</th></tr></thead>
+<tbody>
+<tr><td>김영수</td><td>010-1234-5678</td><td>주택</td><td>03/31</td><td><span class="status status-unread">미확인</span></td></tr>
+<tr><td>이미정</td><td>010-9876-5432</td><td>상가</td><td>03/30</td><td><span class="status status-consulting">상담중</span></td></tr>
+<tr><td>박철호</td><td>010-5555-1234</td><td>토지</td><td>03/29</td><td><span class="status status-done">수임완료</span></td></tr>
+<tr><td>최은지</td><td>010-3333-7777</td><td>주택</td><td>03/28</td><td><span class="status status-closed">종결</span></td></tr>
+<tr><td>정다운</td><td>010-8888-2222</td><td>특수</td><td>03/27</td><td><span class="status status-consulting">상담중</span></td></tr>
+</tbody>
+</table>
+</div>
+<div class="card">
+<div class="card-title">주간 방문자</div>
+<div class="bar-chart">
+<div class="bar-col"><div class="bar-val">145</div><div class="bar" style="height:60%"></div><div class="bar-label">월</div></div>
+<div class="bar-col"><div class="bar-val">198</div><div class="bar" style="height:82%"></div><div class="bar-label">화</div></div>
+<div class="bar-col"><div class="bar-val">241</div><div class="bar" style="height:100%"></div><div class="bar-label">수</div></div>
+<div class="bar-col"><div class="bar-val">187</div><div class="bar" style="height:77%"></div><div class="bar-label">목</div></div>
+<div class="bar-col"><div class="bar-val">210</div><div class="bar" style="height:87%"></div><div class="bar-label">금</div></div>
+<div class="bar-col"><div class="bar-val">156</div><div class="bar" style="height:65%"></div><div class="bar-label">토</div></div>
+<div class="bar-col"><div class="bar-val">110</div><div class="bar" style="height:45%"></div><div class="bar-label">일</div></div>
+</div>
+</div>
+</div>
+<div class="actions" style="margin-top:8px">
+<button class="pill pill-orange" onclick="nav('cases')">새 사례 등록</button>
+<button class="pill pill-outline" onclick="nav('faq')">FAQ 추가</button>
+<button class="pill pill-outline">공지 작성</button>
+</div>
+</div>
+
+<!-- Hero -->
+<div class="page" id="page-hero">
+<h1 class="page-title">히어로 관리</h1>
+<div class="hero-preview" id="heroPreview">
+<div class="main-copy" id="heroMainP">상담은 길게,</div>
+<div class="sub-copy" id="heroSubP">소송은 짧게.</div>
+<div class="desc" id="heroDescP">부동산 명도소송 전문 법무법인이 처음부터 끝까지 함께합니다</div>
+<div class="cta-preview" id="heroCtaP">무료 상담 신청</div>
+</div>
+<div class="card">
+<div class="grid-2">
+<div class="form-group"><label>메인 카피</label><input id="heroMain" value="상담은 길게," oninput="updateHero()"></div>
+<div class="form-group"><label>서브 카피</label><input id="heroSub" value="소송은 짧게." oninput="updateHero()"></div>
+</div>
+<div class="form-group"><label>설명 텍스트</label><textarea id="heroDesc" oninput="updateHero()">부동산 명도소송 전문 법무법인이 처음부터 끝까지 함께합니다</textarea></div>
+<div class="form-group"><label>CTA 텍스트</label><input id="heroCta" value="무료 상담 신청" oninput="updateHero()"></div>
+<div class="form-group"><label>배경 이미지</label><input type="file" accept="image/*"></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+</div>
+</div>
+
+<!-- Services -->
+<div class="page" id="page-services">
+<h1 class="page-title">서비스 관리</h1>
+<div id="svcList"></div>
+<button class="pill pill-orange" style="margin-top:16px" onclick="addService()">새 서비스 추가</button>
+</div>
+
+<!-- Pricing -->
+<div class="page" id="page-pricing">
+<h1 class="page-title">요금 관리</h1>
+<div class="card">
+<div class="card-title">현재 플랜</div>
+<div class="form-group"><label>가격</label><input id="priceVal" value="220만원"></div>
+<div class="card-title" style="margin-top:16px">포함 항목</div>
+<div id="priceItems"></div>
+<button class="btn-sm" style="margin-top:8px" onclick="addPriceItem()">+ 항목 추가</button>
+<div class="form-group" style="margin-top:16px"><label>부가세/실비 안내</label><textarea id="priceTax">부가세 별도, 소송 인지대/송달료 등 실비는 별도 청구됩니다.</textarea></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+</div>
+</div>
+
+<!-- Cases -->
+<div class="page" id="page-cases">
+<h1 class="page-title">성공사례 관리</h1>
+<div id="casesList"></div>
+<button class="pill pill-orange" style="margin-top:16px" onclick="openCaseModal(-1)">새 사례 등록</button>
+</div>
+
+<!-- Lawyers -->
+<div class="page" id="page-lawyers">
+<h1 class="page-title">변호사 관리</h1>
+<div id="lawyerList"></div>
+<button class="pill pill-orange" style="margin-top:16px" onclick="openLawyerModal(-1)">새 변호사 추가</button>
+</div>
+
+<!-- FAQ -->
+<div class="page" id="page-faq">
+<h1 class="page-title">FAQ 관리</h1>
+<div id="faqList"></div>
+<button class="pill pill-orange" style="margin-top:16px" onclick="addFaq()">FAQ 추가</button>
+</div>
+
+<!-- Inquiries -->
+<div class="page" id="page-inquiries">
+<h1 class="page-title">상담문의 관리</h1>
+<div class="card" style="overflow-x:auto">
+<table id="inqTable">
+<thead><tr><th>이름</th><th>연락처</th><th>부동산유형</th><th>날짜</th><th>상태</th><th>메모</th></tr></thead>
+<tbody id="inqBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- Process -->
+<div class="page" id="page-process">
+<h1 class="page-title">진행절차 관리</h1>
+<div id="procList"></div>
+<div class="card" style="margin-top:16px">
+<div class="form-group"><label>법률근거 텍스트</label><textarea id="legalBasis">민사집행법 제136조(부동산의 인도명령) / 민법 제213조(소유물반환청구권) / 민사소송법 제249조 이하</textarea></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+</div>
+</div>
+
+<!-- Settings -->
+<div class="page" id="page-settings">
+<h1 class="page-title">사이트 설정</h1>
+<div class="card">
+<div class="card-title">기본 정보</div>
+<div class="grid-2">
+<div class="form-group"><label>법인명</label><input value="법무법인 인성파트너스"></div>
+<div class="form-group"><label>전화</label><input value="0507-1492-2030"></div>
+<div class="form-group"><label>이메일</label><input value="shindw@snu.ac.kr"></div>
+<div class="form-group"><label>주소</label><input value="서울 영등포구 양평로 144"></div>
+</div>
+<div class="form-group"><label>카카오톡 채널 URL</label><input value="https://pf.kakao.com/_example"></div>
+</div>
+<div class="card">
+<div class="card-title">네비 메뉴 순서</div>
+<div id="navOrder"></div>
+</div>
+<div class="card">
+<div class="form-group"><label>푸터 텍스트</label><textarea>법무법인 인성파트너스 | 서울 영등포구 양평로 144 | 0507-1492-2030</textarea></div>
+<div class="form-group"><label>변호사광고 면책문구</label><textarea>본 사이트는 법무법인 인성파트너스의 광고이며, 대한변호사협회 심사를 받았습니다. 수임료는 사건의 난이도에 따라 달라질 수 있습니다.</textarea></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+</div>
+</div>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+<div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+// SPA nav
+function nav(page){
+document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+document.getElementById('page-'+page).classList.add('active');
+document.querySelectorAll('.sidebar-menu li').forEach(function(li){li.classList.toggle('active',li.dataset.page===page)});
+if(window.innerWidth<=768)toggleSidebar();
+}
+document.getElementById('menu').addEventListener('click',function(e){if(e.target.dataset.page)nav(e.target.dataset.page)});
+
+function toggleSidebar(){
+document.getElementById('sidebar').classList.toggle('open');
+document.getElementById('overlay').classList.toggle('show');
+}
+
+// Hero
+function updateHero(){
+document.getElementById('heroMainP').textContent=document.getElementById('heroMain').value;
+document.getElementById('heroSubP').textContent=document.getElementById('heroSub').value;
+document.getElementById('heroDescP').textContent=document.getElementById('heroDesc').value;
+document.getElementById('heroCtaP').textContent=document.getElementById('heroCta').value;
+}
+
+// Services
+var services=[
+{title:'주택 명도',desc:'아파트, 빌라, 오피스텔 등 주거용 부동산 명도',targets:'임차인 미퇴거, 불법 점유, 계약 만료 후 미퇴거'},
+{title:'상가 명도',desc:'상가, 사무실 등 상업용 부동산 명도',targets:'임대차 분쟁, 권리금 분쟁, 무단 전대'},
+{title:'토지 명도',desc:'토지, 농지 등 비건물 부동산 명도',targets:'무단 점유, 경계 분쟁, 지상물 철거'},
+{title:'특수 명도',desc:'경매, 재개발 등 특수한 상황의 명도',targets:'경매 낙찰 후 명도, 재건축 이주, 공유물 분할'}
+];
+function renderServices(){
+var h='';
+services.forEach(function(s,i){
+h+='<div class="card svc-card"><div class="svc-title">'+s.title+'</div><div class="svc-desc">'+s.desc+'</div><div class="svc-targets">대상: '+s.targets+'</div><div class="svc-actions"><button class="btn-sm" onclick="openSvcModal('+i+')">편집</button>';
+if(i>0)h+='<button class="btn-sm" onclick="moveSvc('+i+',-1)">위</button>';
+if(i<services.length-1)h+='<button class="btn-sm" onclick="moveSvc('+i+',1)">아래</button>';
+h+='</div></div>';
+});
+document.getElementById('svcList').innerHTML=h;
+}
+function moveSvc(i,d){var t=services[i];services[i]=services[i+d];services[i+d]=t;renderServices()}
+function addService(){services.push({title:'새 서비스',desc:'설명을 입력하세요',targets:'대상을 입력하세요'});openSvcModal(services.length-1)}
+function openSvcModal(i){
+var s=services[i];
+showModal('<div class="modal-title">서비스 편집</div><div class="form-group"><label>제목</label><input id="meTitle" value="'+esc(s.title)+'"></div><div class="form-group"><label>설명</label><textarea id="meDesc">'+esc(s.desc)+'</textarea></div><div class="form-group"><label>대상 목록</label><textarea id="meTargets">'+esc(s.targets)+'</textarea></div><div class="modal-actions"><button class="pill pill-outline" onclick="closeModal()">취소</button><button class="pill pill-orange" onclick="saveSvc('+i+')">저장</button></div>');
+}
+function saveSvc(i){services[i]={title:document.getElementById('meTitle').value,desc:document.getElementById('meDesc').value,targets:document.getElementById('meTargets').value};renderServices();closeModal()}
+
+// Pricing
+var priceItems=['전화/카카오톡 상담','사건 분석 및 전략 수립','내용증명 발송','명도소송 소장 작성 및 제출','가처분 신청','강제집행 신청'];
+function renderPriceItems(){
+var h='';
+priceItems.forEach(function(item,i){
+h+='<div class="item-row"><input class="text" value="'+esc(item)+'" onchange="priceItems['+i+']=this.value" style="border:1px solid var(--border);padding:6px 10px;flex:1"><button class="btn-sm btn-del" onclick="priceItems.splice('+i+',1);renderPriceItems()">삭제</button></div>';
+});
+document.getElementById('priceItems').innerHTML=h;
+}
+function addPriceItem(){priceItems.push('새 항목');renderPriceItems()}
+
+// Cases
+var cases=[
+{tag:'주택',title:'강남구 아파트 명도 성공',desc:'임차인 미퇴거 사안, 가처분 후 2주 내 해결',period:'약 6주',date:'2025-12'},
+{tag:'상가',title:'홍대 상가 무단점유 해결',desc:'계약 만료 후 미퇴거 임차인 강제집행 완료',period:'약 8주',date:'2025-11'},
+{tag:'토지',title:'경기도 농지 불법점유 해결',desc:'20년간 무단 점유된 농지 소유권 회복',period:'약 12주',date:'2025-10'},
+{tag:'특수',title:'경매 낙찰 아파트 명도',desc:'경매 낙찰 후 기존 점유자 퇴거 완료',period:'약 4주',date:'2025-09'},
+{tag:'주택',title:'빌라 다세대 명도 3건 일괄',desc:'동일 건물 내 3세대 동시 명도소송 진행',period:'약 10주',date:'2025-08'},
+{tag:'상가',title:'오피스텔 상가 복합 명도',desc:'상가 및 오피스텔 복합 건물 명도 완료',period:'약 7주',date:'2025-07'}
+];
+function renderCases(){
+var h='';
+cases.forEach(function(c,i){
+h+='<div class="card"><div class="tag">'+c.tag+'</div><div class="card-title">'+c.title+'</div><p style="color:var(--muted);font-size:13px;margin-bottom:8px">'+c.desc+'</p><div style="font-size:12px;color:var(--muted)">기간: '+c.period+' / '+c.date+'</div><div style="margin-top:10px;display:flex;gap:4px"><button class="btn-sm" onclick="openCaseModal('+i+')">편집</button><button class="btn-sm btn-del" onclick="cases.splice('+i+',1);renderCases()">삭제</button></div></div>';
+});
+document.getElementById('casesList').innerHTML=h;
+}
+function openCaseModal(i){
+var c=i>=0?cases[i]:{tag:'',title:'',desc:'',period:'',date:''};
+var isNew=i<0;
+showModal('<div class="modal-title">'+(isNew?'새 사례 등록':'사례 편집')+'</div><div class="form-group"><label>유형 태그</label><input id="ceTag" value="'+esc(c.tag)+'"></div><div class="form-group"><label>제목</label><input id="ceTitle" value="'+esc(c.title)+'"></div><div class="form-group"><label>설명</label><textarea id="ceDesc">'+esc(c.desc)+'</textarea></div><div class="grid-2"><div class="form-group"><label>기간</label><input id="cePeriod" value="'+esc(c.period)+'"></div><div class="form-group"><label>날짜</label><input id="ceDate" value="'+esc(c.date)+'"></div></div><div class="modal-actions"><button class="pill pill-outline" onclick="closeModal()">취소</button><button class="pill pill-orange" onclick="saveCase('+(isNew?-1:i)+')">저장</button></div>');
+}
+function saveCase(i){
+var c={tag:document.getElementById('ceTag').value,title:document.getElementById('ceTitle').value,desc:document.getElementById('ceDesc').value,period:document.getElementById('cePeriod').value,date:document.getElementById('ceDate').value};
+if(i<0)cases.push(c);else cases[i]=c;
+renderCases();closeModal();
+}
+
+// Lawyers
+var lawyers=[
+{name:'신동운',position:'대표 변호사',edu:'서울대학교 법학전문대학원',career:'전 서울중앙지방법원 판사\n대한변호사협회 부동산법 분과위원\n명도소송 전문 15년'},
+{name:'김치현',position:'파트너 변호사',edu:'고려대학교 법학전문대학원',career:'전 법률구조공단 변호사\n부동산 경매 전문\n민사집행 분야 10년'}
+];
+function renderLawyers(){
+var h='';
+lawyers.forEach(function(l,i){
+h+='<div class="card"><div style="display:flex;gap:16px;align-items:flex-start"><div style="width:80px;height:80px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;flex-shrink:0">사진</div><div style="flex:1"><div class="card-title" style="margin-bottom:4px">'+l.name+'</div><div style="color:var(--orange);font-size:13px;margin-bottom:6px">'+l.position+'</div><div style="font-size:13px;color:var(--muted);margin-bottom:4px">'+l.edu+'</div><div style="font-size:12px;color:var(--muted);white-space:pre-line">'+l.career+'</div></div></div><div style="margin-top:10px;display:flex;gap:4px"><button class="btn-sm" onclick="openLawyerModal('+i+')">편집</button></div></div>';
+});
+document.getElementById('lawyerList').innerHTML=h;
+}
+function openLawyerModal(i){
+var l=i>=0?lawyers[i]:{name:'',position:'',edu:'',career:''};
+var isNew=i<0;
+showModal('<div class="modal-title">'+(isNew?'새 변호사 추가':'변호사 편집')+'</div><div class="form-group"><label>이름</label><input id="lwName" value="'+esc(l.name)+'"></div><div class="form-group"><label>직위</label><input id="lwPos" value="'+esc(l.position)+'"></div><div class="form-group"><label>학력</label><input id="lwEdu" value="'+esc(l.edu)+'"></div><div class="form-group"><label>경력</label><textarea id="lwCareer">'+esc(l.career)+'</textarea></div><div class="form-group"><label>프로필 사진</label><input type="file" accept="image/*"></div><div class="modal-actions"><button class="pill pill-outline" onclick="closeModal()">취소</button><button class="pill pill-orange" onclick="saveLawyer('+(isNew?-1:i)+')">저장</button></div>');
+}
+function saveLawyer(i){
+var l={name:document.getElementById('lwName').value,position:document.getElementById('lwPos').value,edu:document.getElementById('lwEdu').value,career:document.getElementById('lwCareer').value};
+if(i<0)lawyers.push(l);else lawyers[i]=l;
+renderLawyers();closeModal();
+}
+
+// FAQ
+var faqs=[
+{q:'명도소송 비용은 얼마인가요?',a:'기본 수임료 220만원(부가세 별도)이며, 소송 인지대/송달료 등 실비는 별도입니다.'},
+{q:'명도소송 기간은 얼마나 걸리나요?',a:'통상 가처분 2~4주, 본안소송 3~6개월이 소요됩니다. 가처분을 통해 조기 해결되는 경우도 많습니다.'},
+{q:'임차인이 연락이 안 되는 경우에도 가능한가요?',a:'네, 공시송달 등의 방법으로 소송 진행이 가능합니다.'},
+{q:'상담은 어떻게 진행되나요?',a:'전화 또는 카카오톡으로 초기 상담 후, 필요시 대면 상담을 진행합니다. 초기 상담은 무료입니다.'},
+{q:'경매로 낙찰받은 부동산도 명도소송이 가능한가요?',a:'네, 경매 낙찰 후 기존 점유자에 대한 인도명령 또는 명도소송이 가능합니다.'}
+];
+function renderFaqs(){
+var h='';
+faqs.forEach(function(f,i){
+h+='<div class="card"><div class="form-group"><label>질문</label><input value="'+esc(f.q)+'" onchange="faqs['+i+'].q=this.value" style="font-weight:600"></div><div class="form-group"><label>답변</label><textarea onchange="faqs['+i+'].a=this.value">'+esc(f.a)+'</textarea></div><div style="display:flex;gap:4px">';
+if(i>0)h+='<button class="btn-sm" onclick="moveFaq('+i+',-1)">위</button>';
+if(i<faqs.length-1)h+='<button class="btn-sm" onclick="moveFaq('+i+',1)">아래</button>';
+h+='<button class="btn-sm btn-del" onclick="faqs.splice('+i+',1);renderFaqs()">삭제</button></div></div>';
+});
+document.getElementById('faqList').innerHTML=h;
+}
+function moveFaq(i,d){var t=faqs[i];faqs[i]=faqs[i+d];faqs[i+d]=t;renderFaqs()}
+function addFaq(){faqs.push({q:'새 질문',a:'답변을 입력하세요'});renderFaqs()}
+
+// Inquiries
+var statusCycle=['미확인','상담중','수임완료','종결'];
+var statusClass=['status-unread','status-consulting','status-done','status-closed'];
+var inquiries=[
+{name:'김영수',tel:'010-1234-5678',type:'주택',date:'2026-03-31',status:0,memo:'',detail:'아파트 임차인이 계약 만료 후에도 퇴거하지 않고 있음. 3개월째 연체 중.'},
+{name:'이미정',tel:'010-9876-5432',type:'상가',date:'2026-03-30',status:1,memo:'카톡 상담 완료',detail:'홍대 상가 무단 전대 문제. 임차인이 제3자에게 전대 후 연락 두절.'},
+{name:'박철호',tel:'010-5555-1234',type:'토지',date:'2026-03-29',status:2,memo:'수임계약서 발송',detail:'경기도 용인 농지 무단 점유. 약 200평 규모.'},
+{name:'최은지',tel:'010-3333-7777',type:'주택',date:'2026-03-28',status:3,memo:'집행 완료',detail:'빌라 1층 세입자 명도. 보증금 반환 완료 후 퇴거 거부.'},
+{name:'정다운',tel:'010-8888-2222',type:'특수',date:'2026-03-27',status:1,memo:'',detail:'경매 낙찰 후 기존 세입자 미퇴거. 인도명령 검토 필요.'},
+{name:'한서준',tel:'010-4444-6666',type:'주택',date:'2026-03-26',status:0,memo:'',detail:'오피스텔 임대차 분쟁. 임차인 원상복구 미이행.'},
+{name:'윤지아',tel:'010-7777-3333',type:'상가',date:'2026-03-25',status:1,memo:'대면 상담 예정',detail:'강남 사무실 임대차 계약 해지 통보 후 미퇴거.'},
+{name:'강민수',tel:'010-2222-8888',type:'토지',date:'2026-03-24',status:0,memo:'',detail:'서울 근교 토지 위 무허가 건축물 철거 요청.'},
+{name:'송예린',tel:'010-6666-1111',type:'주택',date:'2026-03-23',status:2,memo:'가처분 신청 중',detail:'다세대 주택 2세대 동시 명도. 전세 사기 피해.'},
+{name:'임도현',tel:'010-1111-9999',type:'특수',date:'2026-03-22',status:3,memo:'종결 처리',detail:'재개발 구역 내 미이주 세입자 명도 완료.'}
+];
+function renderInquiries(){
+var h='';
+inquiries.forEach(function(inq,i){
+h+='<tr onclick="toggleExpand('+i+')" style="cursor:pointer"><td>'+inq.name+'</td><td>'+inq.tel+'</td><td>'+inq.type+'</td><td>'+inq.date+'</td><td><span class="status '+statusClass[inq.status]+'" onclick="cycleStatus(event,'+i+')">'+statusCycle[inq.status]+'</span></td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(inq.memo)+'</td></tr>';
+h+='<tr class="expand-content" id="expand-'+i+'"><td colspan="6"><div style="padding:8px"><div style="margin-bottom:8px"><strong>상황 설명:</strong> '+inq.detail+'</div><div class="form-group" style="margin-bottom:0"><label>메모</label><textarea onchange="inquiries['+i+'].memo=this.value" style="width:100%;padding:8px;border:1px solid var(--border)">'+esc(inq.memo)+'</textarea></div></div></td></tr>';
+});
+document.getElementById('inqBody').innerHTML=h;
+}
+function toggleExpand(i){document.getElementById('expand-'+i).classList.toggle('show')}
+function cycleStatus(e,i){
+e.stopPropagation();
+inquiries[i].status=(inquiries[i].status+1)%4;
+renderInquiries();
+}
+
+// Process
+var procs=[
+{title:'무료 상담',desc:'전화 또는 카카오톡을 통한 초기 상담. 사건 개요 파악 및 진행 방향 안내.'},
+{title:'가처분 신청',desc:'점유이전금지 가처분 신청. 상대방의 점유 이전을 방지하여 소송 실효성 확보.'},
+{title:'본안 소송',desc:'명도소송 본안 제기. 소장 작성, 증거 수집, 변론 진행.'},
+{title:'강제 집행',desc:'승소 판결 후 강제집행 신청. 집행관 동행하여 명도 완료.'}
+];
+function renderProcs(){
+var h='';
+procs.forEach(function(p,i){
+h+='<div class="card"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="width:32px;height:32px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border-radius:100px">'+(i+1)+'</div><div class="form-group" style="flex:1;margin-bottom:0"><input value="'+esc(p.title)+'" onchange="procs['+i+'].title=this.value" style="font-weight:600;border:1px solid var(--border);padding:8px"></div></div><div class="form-group" style="margin-bottom:0"><textarea onchange="procs['+i+'].desc=this.value" style="border:1px solid var(--border);padding:8px;width:100%">'+esc(p.desc)+'</textarea></div></div>';
+});
+document.getElementById('procList').innerHTML=h;
+}
+
+// Nav order
+var navItems=['서비스','요금','성공사례','변호사소개','진행절차','FAQ','상담문의'];
+function renderNavOrder(){
+var h='';
+navItems.forEach(function(n,i){
+h+='<div class="item-row"><span class="text">'+n+'</span>';
+if(i>0)h+='<button class="btn-sm" onclick="moveNav('+i+',-1)">위</button>';
+if(i<navItems.length-1)h+='<button class="btn-sm" onclick="moveNav('+i+',1)">아래</button>';
+h+='</div>';
+});
+document.getElementById('navOrder').innerHTML=h;
+}
+function moveNav(i,d){var t=navItems[i];navItems[i]=navItems[i+d];navItems[i+d]=t;renderNavOrder()}
+
+// Modal
+function showModal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+// Escape
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// Init
+renderServices();renderPriceItems();renderCases();renderLawyers();renderFaqs();renderInquiries();renderProcs();renderNavOrder();
+</script>
+</body>
+</html>
