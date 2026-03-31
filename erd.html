@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>짐빼 ERD</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#1a1a1a;padding:40px 20px}
+.container{max-width:1400px;margin:0 auto}
+h1{font-size:28px;font-weight:900;margin-bottom:8px}
+.sub{font-size:14px;color:#888;margin-bottom:40px}
+.erd{position:relative;min-height:1200px;border:1px solid #e5e7eb;padding:40px;overflow:auto;background:#fafafa}
+
+.table-box{position:absolute;background:#fff;border:2px solid #1a1a1a;min-width:240px;font-size:12px}
+.table-header{background:#1a1a1a;color:#fff;padding:10px 14px;font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.table-header .badge{background:#E85D2A;color:#fff;font-size:10px;padding:2px 8px;border-radius:100px}
+.table-row{padding:6px 14px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center}
+.table-row:last-child{border-bottom:none}
+.col-name{font-weight:600}
+.col-type{color:#888;font-size:11px}
+.pk{color:#E85D2A;font-weight:700}
+.fk{color:#2563eb;font-weight:600}
+
+.legend{display:flex;gap:24px;margin-bottom:24px;font-size:13px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:12px;height:12px}
+.legend-dot.pk-dot{background:#E85D2A}
+.legend-dot.fk-dot{background:#2563eb}
+.legend-dot.idx-dot{background:#888}
+
+.section-title{font-size:18px;font-weight:700;margin:40px 0 16px;padding-top:20px;border-top:1px solid #e5e7eb}
+
+/* SQL */
+.sql-section{margin-top:40px}
+.sql-block{background:#1a1a1a;color:#e0e0e0;padding:20px;font-family:'Courier New',monospace;font-size:12px;line-height:1.7;overflow-x:auto;white-space:pre;margin-bottom:16px;border:none}
+.sql-comment{color:#888}
+.sql-keyword{color:#E85D2A}
+.sql-type{color:#60a5fa}
+
+@media print{body{padding:10px}.erd{border:none;padding:10px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>짐빼 ERD</h1>
+<div class="sub">명도소송 플랫폼 데이터베이스 설계 — 법무법인 인성파트너스 x AI Consilium</div>
+
+<div class="legend">
+<div class="legend-item"><div class="legend-dot pk-dot"></div> PK (Primary Key)</div>
+<div class="legend-item"><div class="legend-dot fk-dot"></div> FK (Foreign Key)</div>
+<div class="legend-item"><div class="legend-dot idx-dot"></div> Index</div>
+</div>
+
+<!-- ERD 다이어그램 -->
+<div class="erd">
+
+<!-- users -->
+<div class="table-box" style="top:20px;left:20px">
+<div class="table-header">users (회원/의뢰인) <span class="badge">Core</span></div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">name</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">phone</span><span class="col-type">varchar(20) UNIQUE</span></div>
+<div class="table-row"><span class="col-name">email</span><span class="col-type">varchar(100)</span></div>
+<div class="table-row"><span class="col-name">kakao_id</span><span class="col-type">varchar(100)</span></div>
+<div class="table-row"><span class="col-name">role</span><span class="col-type">enum(client,admin)</span></div>
+<div class="table-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+<div class="table-row"><span class="col-name">updated_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+<!-- consultations (상담문의) -->
+<div class="table-box" style="top:20px;left:320px">
+<div class="table-header">consultations (상담문의) <span class="badge">Core</span></div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> user_id</span><span class="col-type">uuid → users.id</span></div>
+<div class="table-row"><span class="col-name">name</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">phone</span><span class="col-type">varchar(20)</span></div>
+<div class="table-row"><span class="col-name">email</span><span class="col-type">varchar(100)</span></div>
+<div class="table-row"><span class="col-name">property_type</span><span class="col-type">enum(주택,상가,토지,기타)</span></div>
+<div class="table-row"><span class="col-name">property_address</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">description</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">status</span><span class="col-type">enum(미확인,상담중,수임완료,종결)</span></div>
+<div class="table-row"><span class="col-name">admin_memo</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">source</span><span class="col-type">enum(web,kakao,phone)</span></div>
+<div class="table-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+<!-- cases (수임 사건) -->
+<div class="table-box" style="top:20px;left:660px">
+<div class="table-header">cases (수임 사건) <span class="badge">Core</span></div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> user_id</span><span class="col-type">uuid → users.id</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> consultation_id</span><span class="col-type">uuid → consultations.id</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> attorney_id</span><span class="col-type">uuid → attorneys.id</span></div>
+<div class="table-row"><span class="col-name">case_number</span><span class="col-type">varchar(30)</span></div>
+<div class="table-row"><span class="col-name">court</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">property_type</span><span class="col-type">enum(주택,상가,토지,특수)</span></div>
+<div class="table-row"><span class="col-name">property_address</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">tenant_name</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">monthly_rent</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">deposit</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">overdue_months</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">status</span><span class="col-type">enum(상담,가처분,본안,집행,완료)</span></div>
+<div class="table-row"><span class="col-name">fee_amount</span><span class="col-type">int DEFAULT 2200000</span></div>
+<div class="table-row"><span class="col-name">fee_paid</span><span class="col-type">boolean</span></div>
+<div class="table-row"><span class="col-name">started_at</span><span class="col-type">date</span></div>
+<div class="table-row"><span class="col-name">completed_at</span><span class="col-type">date NULL</span></div>
+<div class="table-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+<!-- case_timeline (사건 진행 타임라인) -->
+<div class="table-box" style="top:20px;left:1000px">
+<div class="table-header">case_timeline (진행 타임라인)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> case_id</span><span class="col-type">uuid → cases.id</span></div>
+<div class="table-row"><span class="col-name">stage</span><span class="col-type">enum(상담,가처분접수,가처분결정,본안접수,변론기일,판결,집행신청,집행완료)</span></div>
+<div class="table-row"><span class="col-name">title</span><span class="col-type">varchar(100)</span></div>
+<div class="table-row"><span class="col-name">description</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">date</span><span class="col-type">date</span></div>
+<div class="table-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+<!-- case_documents (사건 서류) -->
+<div class="table-box" style="top:340px;left:1000px">
+<div class="table-header">case_documents (서류/파일)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> case_id</span><span class="col-type">uuid → cases.id</span></div>
+<div class="table-row"><span class="col-name">doc_type</span><span class="col-type">enum(내용증명,소장,가처분신청서,판결문,집행문,기타)</span></div>
+<div class="table-row"><span class="col-name">file_name</span><span class="col-type">varchar(200)</span></div>
+<div class="table-row"><span class="col-name">file_url</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">file_size</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">uploaded_by</span><span class="col-type">uuid → users.id</span></div>
+<div class="table-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+<!-- attorneys (변호사) -->
+<div class="table-box" style="top:380px;left:20px">
+<div class="table-header">attorneys (변호사)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">name</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">title</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">education</span><span class="col-type">varchar(100)</span></div>
+<div class="table-row"><span class="col-name">career</span><span class="col-type">text (JSON array)</span></div>
+<div class="table-row"><span class="col-name">photo_url</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">sort_order</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+</div>
+
+<!-- services (서비스/업무분야) -->
+<div class="table-box" style="top:380px;left:320px">
+<div class="table-header">services (서비스)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">title</span><span class="col-type">varchar(100)</span></div>
+<div class="table-row"><span class="col-name">description</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">targets</span><span class="col-type">text (JSON array)</span></div>
+<div class="table-row"><span class="col-name">sort_order</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+</div>
+
+<!-- success_cases (성공사례) -->
+<div class="table-box" style="top:580px;left:20px">
+<div class="table-header">success_cases (성공사례)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">category</span><span class="col-type">enum(주택,상가,토지)</span></div>
+<div class="table-row"><span class="col-name">title</span><span class="col-type">varchar(200)</span></div>
+<div class="table-row"><span class="col-name">description</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">region</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">duration_days</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">strategy</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">is_published</span><span class="col-type">boolean</span></div>
+<div class="table-row"><span class="col-name">published_at</span><span class="col-type">date</span></div>
+</div>
+
+<!-- faqs -->
+<div class="table-box" style="top:580px;left:320px">
+<div class="table-header">faqs (FAQ)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">question</span><span class="col-type">varchar(300)</span></div>
+<div class="table-row"><span class="col-name">answer</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">sort_order</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+</div>
+
+<!-- pricing -->
+<div class="table-box" style="top:580px;left:660px">
+<div class="table-header">pricing (요금 플랜)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">plan_name</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">price</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">includes</span><span class="col-type">text (JSON array)</span></div>
+<div class="table-row"><span class="col-name">note</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+</div>
+
+<!-- site_settings -->
+<div class="table-box" style="top:780px;left:20px">
+<div class="table-header">site_settings (사이트 설정)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> key</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">value</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">updated_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+<!-- hero_settings -->
+<div class="table-box" style="top:780px;left:320px">
+<div class="table-header">hero_settings (히어로 관리)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">main_copy</span><span class="col-type">varchar(200)</span></div>
+<div class="table-row"><span class="col-name">sub_copy</span><span class="col-type">varchar(200)</span></div>
+<div class="table-row"><span class="col-name">description</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">cta_text</span><span class="col-type">varchar(50)</span></div>
+<div class="table-row"><span class="col-name">bg_image_url</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">is_active</span><span class="col-type">boolean</span></div>
+</div>
+
+<!-- payments -->
+<div class="table-box" style="top:780px;left:660px">
+<div class="table-header">payments (결제/수임료)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> case_id</span><span class="col-type">uuid → cases.id</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> user_id</span><span class="col-type">uuid → users.id</span></div>
+<div class="table-row"><span class="col-name">amount</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">method</span><span class="col-type">enum(계좌이체,카드,기타)</span></div>
+<div class="table-row"><span class="col-name">status</span><span class="col-type">enum(대기,완료,환불)</span></div>
+<div class="table-row"><span class="col-name">paid_at</span><span class="col-type">timestamp NULL</span></div>
+<div class="table-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+<!-- process_steps -->
+<div class="table-box" style="top:1000px;left:20px">
+<div class="table-header">process_steps (진행절차 콘텐츠)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name">step_number</span><span class="col-type">int</span></div>
+<div class="table-row"><span class="col-name">title</span><span class="col-type">varchar(100)</span></div>
+<div class="table-row"><span class="col-name">description</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">legal_basis</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">sort_order</span><span class="col-type">int</span></div>
+</div>
+
+<!-- notifications -->
+<div class="table-box" style="top:1000px;left:320px">
+<div class="table-header">notifications (알림/알림톡)</div>
+<div class="table-row"><span class="col-name"><span class="pk">PK</span> id</span><span class="col-type">uuid</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> user_id</span><span class="col-type">uuid → users.id</span></div>
+<div class="table-row"><span class="col-name"><span class="fk">FK</span> case_id</span><span class="col-type">uuid → cases.id</span></div>
+<div class="table-row"><span class="col-name">type</span><span class="col-type">enum(kakao,sms,email,push)</span></div>
+<div class="table-row"><span class="col-name">title</span><span class="col-type">varchar(200)</span></div>
+<div class="table-row"><span class="col-name">content</span><span class="col-type">text</span></div>
+<div class="table-row"><span class="col-name">is_sent</span><span class="col-type">boolean</span></div>
+<div class="table-row"><span class="col-name">sent_at</span><span class="col-type">timestamp NULL</span></div>
+<div class="table-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+</div>
+
+</div><!-- /erd -->
+
+<!-- 관계 설명 -->
+<div class="section-title">테이블 관계</div>
+<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:40px">
+<thead>
+<tr style="border-bottom:2px solid #1a1a1a"><th style="text-align:left;padding:10px">관계</th><th style="text-align:left;padding:10px">설명</th><th style="text-align:left;padding:10px">카디널리티</th></tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">users → consultations</td><td style="padding:10px">회원이 상담문의 접수</td><td style="padding:10px">1:N</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">users → cases</td><td style="padding:10px">의뢰인의 수임 사건</td><td style="padding:10px">1:N</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">consultations → cases</td><td style="padding:10px">상담이 수임으로 전환</td><td style="padding:10px">1:1</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">attorneys → cases</td><td style="padding:10px">변호사가 사건 담당</td><td style="padding:10px">1:N</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">cases → case_timeline</td><td style="padding:10px">사건별 진행 단계 기록</td><td style="padding:10px">1:N</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">cases → case_documents</td><td style="padding:10px">사건별 서류/파일</td><td style="padding:10px">1:N</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">cases → payments</td><td style="padding:10px">사건별 결제 내역</td><td style="padding:10px">1:N</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">cases → notifications</td><td style="padding:10px">사건별 알림 발송</td><td style="padding:10px">1:N</td></tr>
+</tbody>
+</table>
+
+<!-- 테이블 목적 -->
+<div class="section-title">테이블 목적</div>
+<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:40px">
+<thead>
+<tr style="border-bottom:2px solid #1a1a1a"><th style="text-align:left;padding:10px">구분</th><th style="text-align:left;padding:10px">테이블</th><th style="text-align:left;padding:10px">용도</th></tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#E85D2A" rowspan="5">비즈니스</td><td style="padding:10px">users</td><td style="padding:10px">의뢰인 회원 관리 (카카오 로그인 연동)</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">consultations</td><td style="padding:10px">웹/카톡/전화 상담문의 접수 및 상태 관리</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">cases</td><td style="padding:10px">수임 사건 전체 라이프사이클 (상담→가처분→본안→집행→완료)</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">case_timeline</td><td style="padding:10px">의뢰인 전용 포털 — 진행상황 실시간 표시</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">payments</td><td style="padding:10px">수임료 결제/입금 확인</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700" rowspan="3">CMS</td><td style="padding:10px">hero_settings</td><td style="padding:10px">어드민에서 히어로 카피/이미지 관리</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">site_settings</td><td style="padding:10px">법인명/전화/주소 등 사이트 전역 설정</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">process_steps</td><td style="padding:10px">진행절차 콘텐츠 관리</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700" rowspan="4">콘텐츠</td><td style="padding:10px">services</td><td style="padding:10px">업무분야(주택/상가/토지/특수) 관리</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">success_cases</td><td style="padding:10px">성공사례 CRUD + 공개/비공개</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">faqs</td><td style="padding:10px">FAQ 관리 + 순서 변경</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px">attorneys</td><td style="padding:10px">변호사 프로필 관리</td></tr>
+<tr><td style="padding:10px;font-weight:700">커뮤니케이션</td><td style="padding:10px">notifications</td><td style="padding:10px">카카오 알림톡/SMS/이메일 발송 이력</td></tr>
+</tbody>
+</table>
+
+<!-- API 엔드포인트 요약 -->
+<div class="section-title">API 엔드포인트 (예정)</div>
+<table style="width:100%;border-collapse:collapse;font-size:13px">
+<thead>
+<tr style="border-bottom:2px solid #1a1a1a"><th style="text-align:left;padding:10px">Method</th><th style="text-align:left;padding:10px">Endpoint</th><th style="text-align:left;padding:10px">설명</th><th style="text-align:left;padding:10px">Auth</th></tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#E85D2A">POST</td><td style="padding:10px;font-family:monospace">/api/consultations</td><td style="padding:10px">상담문의 접수</td><td style="padding:10px">Public</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#2563eb">GET</td><td style="padding:10px;font-family:monospace">/api/cases/:id</td><td style="padding:10px">사건 상세 (의뢰인 포털)</td><td style="padding:10px">User</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#2563eb">GET</td><td style="padding:10px;font-family:monospace">/api/cases/:id/timeline</td><td style="padding:10px">진행 타임라인</td><td style="padding:10px">User</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#2563eb">GET</td><td style="padding:10px;font-family:monospace">/api/cases/:id/documents</td><td style="padding:10px">서류 목록</td><td style="padding:10px">User</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#2563eb">GET</td><td style="padding:10px;font-family:monospace">/api/admin/dashboard</td><td style="padding:10px">어드민 대시보드 KPI</td><td style="padding:10px">Admin</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#2563eb">GET</td><td style="padding:10px;font-family:monospace">/api/admin/consultations</td><td style="padding:10px">상담문의 리스트</td><td style="padding:10px">Admin</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#059669">PUT</td><td style="padding:10px;font-family:monospace">/api/admin/consultations/:id</td><td style="padding:10px">상태 변경/메모</td><td style="padding:10px">Admin</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#2563eb">GET</td><td style="padding:10px;font-family:monospace">/api/admin/cases</td><td style="padding:10px">수임 사건 리스트</td><td style="padding:10px">Admin</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#E85D2A">POST</td><td style="padding:10px;font-family:monospace">/api/admin/cases</td><td style="padding:10px">수임 등록</td><td style="padding:10px">Admin</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#059669">PUT</td><td style="padding:10px;font-family:monospace">/api/admin/hero</td><td style="padding:10px">히어로 수정</td><td style="padding:10px">Admin</td></tr>
+<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px;font-weight:700;color:#2563eb">GET</td><td style="padding:10px;font-family:monospace">/api/content/:type</td><td style="padding:10px">콘텐츠 조회 (services/faqs/cases 등)</td><td style="padding:10px">Public</td></tr>
+<tr><td style="padding:10px;font-weight:700;color:#059669">PUT</td><td style="padding:10px;font-family:monospace">/api/admin/content/:type/:id</td><td style="padding:10px">콘텐츠 수정</td><td style="padding:10px">Admin</td></tr>
+</tbody>
+</table>
+
+</div>
+</body>
+</html>
