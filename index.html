@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>짐빼 — 명도소송 전문 변호사</title>
+<meta name="description" content="상담은 길게, 소송은 짧게. 명도소송 전문 변호사가 처음부터 끝까지 직접 담당합니다. 220만원.">
+<link rel="stylesheet" href="common.css">
+<style>
+/* ===== LOADING SCREEN ===== */
+.loading{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .6s cubic-bezier(.77,0,.175,1)}
+.loading.done{transform:translateY(-100%)}
+.loading__scene{position:relative;width:280px;height:180px;margin-bottom:40px}
+.building{position:absolute;bottom:0;background:var(--black)}
+.building--1{left:20px;width:40px;height:140px}
+.building--2{left:70px;width:55px;height:170px}
+.building--3{left:135px;width:45px;height:120px}
+.building--4{left:190px;width:60px;height:155px}
+.building__window{position:absolute;width:8px;height:8px;background:#444;border:1px solid #555}
+.box{position:absolute;width:14px;height:14px;background:var(--orange);opacity:0}
+.box--1{left:90px;bottom:40px;animation:boxFly 2s .3s forwards}
+.box--2{left:50px;bottom:70px;animation:boxFly 2s .6s forwards}
+.box--3{left:210px;bottom:55px;animation:boxFly 2s .9s forwards}
+.box--4{left:150px;bottom:30px;animation:boxFly 2s 1.2s forwards}
+.box--5{left:80px;bottom:100px;animation:boxFly 2s 1.5s forwards}
+@keyframes boxFly{
+  0%{opacity:1;transform:translate(0,0)}
+  30%{opacity:1;transform:translate(20px,-10px)}
+  100%{opacity:0;transform:translate(160px,-40px) scale(.5)}
+}
+.loading__progress{width:240px;margin-top:8px}
+.loading__bar{height:3px;background:#eee;overflow:hidden}
+.loading__fill{height:100%;width:0;background:var(--orange);animation:fillBar 2.3s ease-out forwards}
+@keyframes fillBar{0%{width:0}100%{width:100%}}
+.loading__counter{text-align:center;margin-top:8px;font-size:13px;font-weight:600;color:var(--gray-light);font-variant-numeric:tabular-nums}
+
+/* ===== HERO ===== */
+.hero{padding:160px 0 120px;min-height:90vh;display:flex;align-items:center}
+.hero__inner{display:flex;align-items:center;justify-content:space-between;gap:60px}
+.hero__text{max-width:600px}
+.hero__title{margin-bottom:24px}
+.hero__sub{font-size:16px;color:var(--gray-light);margin-bottom:40px;max-width:440px;line-height:1.7}
+.hero__ctas{display:flex;gap:16px;flex-wrap:wrap}
+.hero__badge{background:var(--bg-light);border:1px solid var(--gray-border);padding:32px 40px;text-align:center;flex-shrink:0}
+.hero__price{font-size:clamp(32px,4vw,48px);font-weight:900;letter-spacing:-0.03em;color:var(--orange)}
+.hero__price-sub{font-size:14px;color:var(--gray-text);margin-top:8px}
+
+/* ===== PERSUASION GRID ===== */
+.persuasion{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.persuasion .card{position:relative;padding-left:80px}
+.persuasion__num{position:absolute;left:40px;top:40px;font-size:14px;font-weight:800;color:var(--orange)}
+.persuasion__title{font-size:18px;font-weight:700;margin-bottom:8px}
+.persuasion__desc{font-size:15px;color:var(--gray-text);line-height:1.7}
+
+/* ===== COMPARISON ===== */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:0;max-width:800px;margin:0 auto}
+.compare__col{padding:48px 40px}
+.compare__col--left{border:1px solid var(--gray-border);border-right:none}
+.compare__col--right{border:2px solid var(--orange);position:relative}
+.compare__label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;color:var(--gray-light)}
+.compare__label--highlight{color:var(--orange)}
+.compare__item{padding:16px 0;border-bottom:1px solid var(--gray-border)}
+.compare__item:last-child{border-bottom:none}
+.compare__key{font-size:13px;color:var(--gray-light);margin-bottom:4px}
+.compare__val{font-size:16px;font-weight:600}
+.compare__val--highlight{color:var(--orange)}
+.compare__badge{position:absolute;top:-14px;right:20px;background:var(--orange);color:#fff;font-size:12px;font-weight:700;padding:4px 16px}
+
+/* ===== STATS ===== */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;text-align:center}
+.stats__num{font-size:clamp(36px,5vw,56px);font-weight:900;letter-spacing:-0.03em}
+.stats__label{font-size:14px;color:var(--gray-text);margin-top:8px}
+
+/* ===== PROCESS PREVIEW ===== */
+.process-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.process-card{padding:32px;border:1px solid #333}
+.process-card__step{font-size:13px;font-weight:700;color:var(--orange);margin-bottom:16px}
+.process-card__title{font-size:20px;font-weight:700;color:#fff;margin-bottom:8px}
+.process-card__desc{font-size:14px;color:#aaa;line-height:1.6}
+
+/* ===== ATTORNEY PREVIEW ===== */
+.attorneys{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:48px}
+.attorney-card{padding:40px;border:1px solid #333}
+.attorney-card__name{font-size:24px;font-weight:900;color:#fff;margin-bottom:4px}
+.attorney-card__role{font-size:14px;color:var(--orange);margin-bottom:16px}
+.attorney-card__bio{font-size:14px;color:#aaa;line-height:1.8}
+
+/* ===== CTA BAND ===== */
+.cta-band{padding:100px 0;text-align:center;background:var(--orange);color:#fff}
+.cta-band__title{font-size:clamp(24px,3.5vw,40px);font-weight:900;letter-spacing:-0.02em;margin-bottom:16px}
+.cta-band__sub{font-size:16px;opacity:.85;margin-bottom:40px}
+.cta-band .btn{background:#fff;color:var(--orange);font-weight:700}
+.cta-band .btn:hover{background:#f5f5f5}
+
+/* ===== SECTION HEADERS ===== */
+.section__label{font-size:13px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.section__title{margin-bottom:16px}
+.section__desc{font-size:16px;color:var(--gray-text);max-width:560px;margin-bottom:48px}
+.section--dark .section__desc{color:#aaa}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .hero{padding:120px 0 80px;min-height:auto}
+  .hero__inner{flex-direction:column;text-align:center}
+  .hero__sub{margin-left:auto;margin-right:auto}
+  .hero__ctas{justify-content:center}
+  .hero__badge{width:100%}
+  .persuasion{grid-template-columns:1fr}
+  .persuasion .card{padding-left:24px;padding-top:60px}
+  .persuasion__num{left:24px;top:24px}
+  .compare{grid-template-columns:1fr}
+  .compare__col--left{border-right:1px solid var(--gray-border);border-bottom:none}
+  .stats{grid-template-columns:1fr;gap:32px}
+  .process-preview{grid-template-columns:1fr 1fr}
+  .attorneys{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .process-preview{grid-template-columns:1fr}
+  .hero__ctas{flex-direction:column;align-items:stretch}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+  <div class="loading__scene">
+    <div class="building building--1">
+      <div class="building__window" style="top:12px;left:8px"></div>
+      <div class="building__window" style="top:12px;left:24px"></div>
+      <div class="building__window" style="top:30px;left:8px"></div>
+      <div class="building__window" style="top:30px;left:24px"></div>
+      <div class="building__window" style="top:48px;left:8px"></div>
+      <div class="building__window" style="top:48px;left:24px"></div>
+    </div>
+    <div class="building building--2">
+      <div class="building__window" style="top:12px;left:10px"></div>
+      <div class="building__window" style="top:12px;left:28px"></div>
+      <div class="building__window" style="top:12px;left:38px"></div>
+      <div class="building__window" style="top:30px;left:10px"></div>
+      <div class="building__window" style="top:30px;left:28px"></div>
+      <div class="building__window" style="top:30px;left:38px"></div>
+      <div class="building__window" style="top:48px;left:10px"></div>
+      <div class="building__window" style="top:48px;left:28px"></div>
+    </div>
+    <div class="building building--3">
+      <div class="building__window" style="top:12px;left:8px"></div>
+      <div class="building__window" style="top:12px;left:26px"></div>
+      <div class="building__window" style="top:30px;left:8px"></div>
+      <div class="building__window" style="top:30px;left:26px"></div>
+    </div>
+    <div class="building building--4">
+      <div class="building__window" style="top:12px;left:10px"></div>
+      <div class="building__window" style="top:12px;left:28px"></div>
+      <div class="building__window" style="top:12px;left:42px"></div>
+      <div class="building__window" style="top:30px;left:10px"></div>
+      <div class="building__window" style="top:30px;left:28px"></div>
+      <div class="building__window" style="top:30px;left:42px"></div>
+    </div>
+    <div class="box box--1"></div>
+    <div class="box box--2"></div>
+    <div class="box box--3"></div>
+    <div class="box box--4"></div>
+    <div class="box box--5"></div>
+  </div>
+  <div class="loading__progress">
+    <div class="loading__bar"><div class="loading__fill"></div></div>
+    <div class="loading__counter" id="loadCounter">0%</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">짐빼</a>
+    <div class="nav__links">
+      <a href="services.html">서비스</a>
+      <a href="process.html">진행절차</a>
+      <a href="pricing.html">비용안내</a>
+      <a href="cases.html">해결사례</a>
+      <a href="attorney.html">변호사</a>
+      <a href="faq.html">자주 묻는 질문</a>
+    </div>
+    <div class="nav__cta">
+      <a href="contact.html" class="btn btn--primary btn--small">상담하기</a>
+    </div>
+    <div class="nav__mobile" id="navMobile">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="services.html">서비스</a>
+  <a href="process.html">진행절차</a>
+  <a href="pricing.html">비용안내</a>
+  <a href="cases.html">해결사례</a>
+  <a href="attorney.html">변호사</a>
+  <a href="faq.html">자주 묻는 질문</a>
+  <a href="contact.html">상담하기</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__inner">
+      <div class="hero__text">
+        <h1 class="hero__title t-h1">상담은 길게,<br><span class="t-orange">소송은 짧게.</span></h1>
+        <p class="hero__sub">월세 미납, 계약 만료 — 명도소송 전문 변호사가 처음부터 끝까지 직접 담당합니다.</p>
+        <div class="hero__ctas">
+          <a href="contact.html" class="btn btn--primary">카카오톡 상담하기</a>
+          <a href="process.html" class="btn btn--outline">진행절차 보기</a>
+        </div>
+      </div>
+      <div class="hero__badge">
+        <div class="hero__price">220만원</div>
+        <div class="hero__price-sub">가처분 + 본안소송<br>변호사 직접 담당</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSUASION 6 POINTS -->
+<section class="section section--light">
+  <div class="container">
+    <div class="section__label reveal">왜 지금 시작해야 하는가</div>
+    <h2 class="section__title t-h2 reveal">미루면 손해,<br>잘못하면 더 큰 손해.</h2>
+    <p class="section__desc reveal">명도소송을 고민하는 임대인이 반드시 알아야 할 6가지.</p>
+    <div class="persuasion">
+      <div class="card reveal">
+        <span class="persuasion__num">01</span>
+        <div class="persuasion__title">아무 데나 하지 마, 위험해</div>
+        <p class="persuasion__desc">자력구제는 불법입니다. 임차인 동의 없이 짐을 빼거나 잠금장치를 바꾸면 형사처벌 대상이 됩니다. 법적 절차 없는 퇴거 시도는 오히려 임대인이 피고가 될 수 있습니다.</p>
+      </div>
+      <div class="card reveal">
+        <span class="persuasion__num">02</span>
+        <div class="persuasion__title">1달 늦어지면 그게 더 손해</div>
+        <p class="persuasion__desc">변호사 비용을 아끼려고 미루는 동안 밀리는 월세, 공실 손해, 새 임차인 기회비용이 쌓입니다. 220만원보다 한 달 지연 비용이 더 클 수 있습니다.</p>
+      </div>
+      <div class="card reveal">
+        <span class="persuasion__num">03</span>
+        <div class="persuasion__title">변호사 비용 돌려받을 수 있다</div>
+        <p class="persuasion__desc">명도소송에서 승소하면 소송비용(인지대, 송달료 등)을 상대방에게 청구할 수 있습니다. 변호사 보수도 대한변협 기준 범위 내에서 일부 환수 가능합니다.</p>
+      </div>
+      <div class="card reveal">
+        <span class="persuasion__num">04</span>
+        <div class="persuasion__title">어차피 보증금에서 깔 수 있다</div>
+        <p class="persuasion__desc">임차인에게 반환할 보증금이 있는 경우, 미납 차임과 소송비용을 공제한 뒤 반환하면 됩니다. 실질적인 현금 부담은 생각보다 낮습니다.</p>
+      </div>
+      <div class="card reveal">
+        <span class="persuasion__num">05</span>
+        <div class="persuasion__title">끝까지 해준다</div>
+        <p class="persuasion__desc">상담부터 가처분, 본안소송, 강제집행까지 원스톱으로 진행합니다. 중간에 다른 변호사를 찾거나 추가 계약을 맺을 필요가 없습니다.</p>
+      </div>
+      <div class="card reveal">
+        <span class="persuasion__num">06</span>
+        <div class="persuasion__title">전용 포털 만들어준다</div>
+        <p class="persuasion__desc">의뢰인별 전용 진행 상황 포털을 제공합니다. 서류 접수, 기일 일정, 진행 단계를 실시간으로 확인할 수 있어 불안한 기다림이 없습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="section">
+  <div class="container">
+    <div class="section__label reveal">왜 짐빼인가</div>
+    <h2 class="section__title t-h2 reveal">같은 명도소송,<br>다른 결과.</h2>
+    <p class="section__desc reveal">가격만 보면 안 됩니다. 누가, 어떻게, 어디까지 하는지가 중요합니다.</p>
+    <div class="compare reveal">
+      <div class="compare__col compare__col--left">
+        <div class="compare__label">일반 법률사무소</div>
+        <div class="compare__item">
+          <div class="compare__key">비용</div>
+          <div class="compare__val">150만원 ~</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">담당자</div>
+          <div class="compare__val">사무장 / 직원</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">진행 범위</div>
+          <div class="compare__val">소송까지만</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">진행 확인</div>
+          <div class="compare__val">전화 문의</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">강제집행</div>
+          <div class="compare__val">별도 계약</div>
+        </div>
+      </div>
+      <div class="compare__col compare__col--right">
+        <div class="compare__badge">추천</div>
+        <div class="compare__label compare__label--highlight">짐빼</div>
+        <div class="compare__item">
+          <div class="compare__key">비용</div>
+          <div class="compare__val compare__val--highlight">220만원 (확정)</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">담당자</div>
+          <div class="compare__val compare__val--highlight">변호사 직접</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">진행 범위</div>
+          <div class="compare__val compare__val--highlight">가처분 + 본안 + 집행</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">진행 확인</div>
+          <div class="compare__val compare__val--highlight">전용 포털 실시간</div>
+        </div>
+        <div class="compare__item">
+          <div class="compare__key">강제집행</div>
+          <div class="compare__val compare__val--highlight">포함</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section section--light">
+  <div class="container">
+    <div class="stats">
+      <div class="reveal">
+        <div class="stats__num t-orange" data-count="320">0</div>
+        <div class="stats__label">누적 수임 건수</div>
+      </div>
+      <div class="reveal">
+        <div class="stats__num" data-count="45">0</div>
+        <div class="stats__label">평균 소요일</div>
+      </div>
+      <div class="reveal">
+        <div class="stats__num" data-count="15">0</div>
+        <div class="stats__label">변호사 경력 (년)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS PREVIEW -->
+<section class="section section--dark">
+  <div class="container">
+    <div class="section__label reveal">진행절차</div>
+    <h2 class="section__title t-h2 reveal" style="color:#fff">접수부터 퇴거까지,<br>4단계.</h2>
+    <p class="section__desc reveal">복잡해 보여도 맡기면 간단합니다.</p>
+    <div class="process-preview">
+      <div class="process-card reveal">
+        <div class="process-card__step">STEP 01</div>
+        <div class="process-card__title">상담 및 수임</div>
+        <div class="process-card__desc">사건 검토, 전략 수립, 수임 계약 체결. 카카오톡으로 간편하게 시작합니다.</div>
+      </div>
+      <div class="process-card reveal">
+        <div class="process-card__step">STEP 02</div>
+        <div class="process-card__title">점유이전금지 가처분</div>
+        <div class="process-card__desc">제3자에게 점유를 넘기는 것을 방지합니다. 빠르게 신청하여 선제적으로 대응합니다.</div>
+      </div>
+      <div class="process-card reveal">
+        <div class="process-card__step">STEP 03</div>
+        <div class="process-card__title">명도소송 본안</div>
+        <div class="process-card__desc">소장 작성부터 변론기일 출석, 판결 선고까지 변호사가 직접 수행합니다.</div>
+      </div>
+      <div class="process-card reveal">
+        <div class="process-card__step">STEP 04</div>
+        <div class="process-card__title">강제집행</div>
+        <div class="process-card__desc">판결 확정 후 집행관을 통한 강제퇴거까지 완료합니다. 별도 비용 없습니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ATTORNEYS -->
+<section class="section section--dark" style="padding-top:0">
+  <div class="container">
+    <div class="section__label reveal">담당 변호사</div>
+    <h2 class="section__title t-h2 reveal" style="color:#fff">직접 만나는 변호사.</h2>
+    <p class="section__desc reveal">사건을 맡으면 끝까지 같은 변호사가 담당합니다.</p>
+    <div class="attorneys">
+      <div class="attorney-card reveal">
+        <div class="attorney-card__name">신동운</div>
+        <div class="attorney-card__role">대표변호사 / 법무법인 인성파트너스</div>
+        <div class="attorney-card__bio">
+          서울대학교 졸업<br>
+          대법원 국선변호인<br>
+          주택도시보증공사(HUG) 자문변호사<br>
+          법무법인 인성파트너스 대표
+        </div>
+      </div>
+      <div class="attorney-card reveal">
+        <div class="attorney-card__name">김치현</div>
+        <div class="attorney-card__role">변호사 / 법무법인 인성파트너스</div>
+        <div class="attorney-card__bio">
+          KAIST 졸업<br>
+          법무법인 인성파트너스 소속<br>
+          부동산 명도 / 민사집행 전문
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="container">
+    <div class="cta-band__title reveal">월세 미납, 더 이상 참지 마세요</div>
+    <div class="cta-band__sub reveal">명도소송 전문 변호사가 처음부터 끝까지 함께합니다.</div>
+    <a href="contact.html" class="btn reveal">카카오톡으로 상담하기</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <h4>짐빼</h4>
+        <p style="font-size:13px;margin-bottom:12px">상담은 길게, 소송은 짧게.<br>명도소송 전문 법률서비스.</p>
+        <p style="font-size:12px;color:#666">법무법인 인성파트너스</p>
+      </div>
+      <div class="footer__links">
+        <h5>서비스</h5>
+        <a href="services.html">서비스 안내</a>
+        <a href="process.html">진행절차</a>
+        <a href="pricing.html">비용안내</a>
+        <a href="cases.html">해결사례</a>
+      </div>
+      <div class="footer__links">
+        <h5>법인 안내</h5>
+        <a href="attorney.html">변호사 소개</a>
+        <a href="faq.html">자주 묻는 질문</a>
+        <a href="contact.html">상담하기</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>법무법인 인성파트너스 | 대표변호사 신동운</p>
+      <div class="footer__disclaimer">본 웹사이트는 법률서비스에 관한 일반적인 정보를 제공하며, 구체적인 법률 조언에 해당하지 않습니다. 개별 사안에 대한 법률 조언은 상담을 통해 받으실 수 있습니다. 광고물 승인번호: 제2024-000호</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Loading counter */
+(function(){
+  var counter=document.getElementById('loadCounter');
+  var n=0;
+  var iv=setInterval(function(){
+    n+=Math.floor(Math.random()*4)+1;
+    if(n>100)n=100;
+    counter.textContent=n+'%';
+    if(n>=100)clearInterval(iv);
+  },50);
+  setTimeout(function(){
+    n=100;counter.textContent='100%';
+    clearInterval(iv);
+  },2200);
+  setTimeout(function(){
+    document.getElementById('loading').classList.add('done');
+  },2500);
+})();
+
+/* Mobile menu */
+document.getElementById('navMobile').addEventListener('click',function(){
+  document.getElementById('mobileMenu').classList.toggle('active');
+});
+
+/* Reveal on scroll */
+var reveals=document.querySelectorAll('.reveal');
+var observer=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}
+  });
+},{threshold:0.15});
+reveals.forEach(function(el){observer.observe(el)});
+
+/* Counter animation */
+var statNums=document.querySelectorAll('.stats__num[data-count]');
+var countObserver=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      var target=parseInt(e.target.getAttribute('data-count'));
+      var n=0;var step=Math.ceil(target/40);
+      var iv=setInterval(function(){
+        n+=step;if(n>=target){n=target;clearInterval(iv)}
+        e.target.textContent=n+'+';
+      },30);
+      countObserver.unobserve(e.target);
+    }
+  });
+},{threshold:0.5});
+statNums.forEach(function(el){countObserver.observe(el)});
+</script>
+</body>
+</html>
