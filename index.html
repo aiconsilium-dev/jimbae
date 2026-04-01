@@ -488,6 +488,61 @@ var countObserver=new IntersectionObserver(function(entries){
   });
 },{threshold:0.5});
 statNums.forEach(function(el){countObserver.observe(el)});
+
+/* ===== API 연동 (Public) ===== */
+var API_BASE = 'http://localhost:3000';
+
+async function apiPublic(path) {
+  try {
+    var res = await fetch(API_BASE + path, { headers: { 'Content-Type': 'application/json' } });
+    return await res.json();
+  } catch(err) {
+    console.error('API 호출 실패 (' + path + '):', err);
+    return null;
+  }
+}
+
+// 히어로 카피
+(async function loadHero(){
+  try {
+    var data = await apiPublic('/api/content/hero');
+    var hero = data && (data.data || data);
+    if (!hero) return;
+    var titleEl = document.querySelector('.hero__title');
+    if (hero.main_copy && hero.sub_copy && titleEl) {
+      titleEl.innerHTML = hero.main_copy.replace(/\n/g,'<br>') + '<br><span class="t-orange">' + hero.sub_copy + '</span>';
+    }
+    var subEl = document.querySelector('.hero__sub');
+    if (hero.description && subEl) subEl.textContent = hero.description;
+    var ctaEl = document.querySelector('.hero__ctas .btn--primary');
+    if (hero.cta_text && ctaEl) ctaEl.textContent = hero.cta_text;
+  } catch(err) { console.error('히어로 로드 실패:', err); }
+})();
+
+// 변호사
+(async function loadAttorneys(){
+  try {
+    var data = await apiPublic('/api/content/attorneys');
+    var items = data && (data.data || data);
+    if (!Array.isArray(items) || items.length === 0) return;
+    var container = document.querySelector('.attorneys');
+    if (!container) return;
+    container.innerHTML = items.map(function(a){
+      return '<div class="attorney-card reveal visible"><div class="attorney-card__name">' + (a.name||'') + '</div><div class="attorney-card__role">' + (a.position||a.role||'') + '</div><div class="attorney-card__bio">' + (a.career||a.bio||'').replace(/\n/g,'<br>') + '</div></div>';
+    }).join('');
+  } catch(err) { console.error('변호사 로드 실패:', err); }
+})();
+
+// 상담 접수 폼 (contact.html이 아닌 경우도 대비)
+(function(){
+  var contactForm = document.querySelector('form[data-contact]');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function(e){
+      e.preventDefault();
+      // handled in contact.html
+    });
+  }
+})();
 </script>
 </body>
 </html>

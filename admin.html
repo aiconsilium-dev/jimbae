@@ -106,6 +106,29 @@ tr:hover{background:#fafafa}
 </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--sidebar)">
+  <div class="card" style="width:360px;max-width:90vw;padding:40px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-size:24px;font-weight:700;color:var(--orange);margin-bottom:8px">짐빼 Admin</div>
+      <div style="color:var(--muted);font-size:14px">관리자 로그인</div>
+    </div>
+    <div id="loginError" style="display:none;background:#fef2f2;color:var(--red);padding:10px 14px;margin-bottom:16px;font-size:13px;border:1px solid #fecaca"></div>
+    <div class="form-group">
+      <label>전화번호</label>
+      <input id="loginPhone" type="tel" placeholder="010-0000-0000">
+    </div>
+    <div class="form-group">
+      <label>비밀번호</label>
+      <input id="loginPassword" type="password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="pill pill-orange" style="width:100%;padding:12px;font-size:15px" onclick="doLogin()">로그인</button>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD (hidden until login) -->
+<div id="adminApp" style="display:none">
 <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 <nav class="sidebar" id="sidebar">
@@ -184,7 +207,7 @@ tr:hover{background:#fafafa}
 <div class="form-group"><label>설명 텍스트</label><textarea id="heroDesc" oninput="updateHero()">부동산 명도소송 전문 법무법인이 처음부터 끝까지 함께합니다</textarea></div>
 <div class="form-group"><label>CTA 텍스트</label><input id="heroCta" value="무료 상담 신청" oninput="updateHero()"></div>
 <div class="form-group"><label>배경 이미지</label><input type="file" accept="image/*"></div>
-<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="saveHero()">저장</button></div>
 </div>
 </div>
 
@@ -205,7 +228,7 @@ tr:hover{background:#fafafa}
 <div id="priceItems"></div>
 <button class="btn-sm" style="margin-top:8px" onclick="addPriceItem()">+ 항목 추가</button>
 <div class="form-group" style="margin-top:16px"><label>부가세/실비 안내</label><textarea id="priceTax">부가세 별도, 소송 인지대/송달료 등 실비는 별도 청구됩니다.</textarea></div>
-<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="savePricing()">저장</button></div>
 </div>
 </div>
 
@@ -247,7 +270,7 @@ tr:hover{background:#fafafa}
 <div id="procList"></div>
 <div class="card" style="margin-top:16px">
 <div class="form-group"><label>법률근거 텍스트</label><textarea id="legalBasis">민사집행법 제136조(부동산의 인도명령) / 민법 제213조(소유물반환청구권) / 민사소송법 제249조 이하</textarea></div>
-<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="saveProcess()">저장</button></div>
 </div>
 </div>
 
@@ -271,7 +294,7 @@ tr:hover{background:#fafafa}
 <div class="card">
 <div class="form-group"><label>푸터 텍스트</label><textarea>법무법인 인성파트너스 | 서울 영등포구 양평로 144 | 0507-1492-2030</textarea></div>
 <div class="form-group"><label>변호사광고 면책문구</label><textarea>본 사이트는 법무법인 인성파트너스의 광고이며, 대한변호사협회 심사를 받았습니다. 수임료는 사건의 난이도에 따라 달라질 수 있습니다.</textarea></div>
-<div style="text-align:right"><button class="pill pill-orange" onclick="alert('저장되었습니다')">저장</button></div>
+<div style="text-align:right"><button class="pill pill-orange" onclick="saveSettings()">저장</button></div>
 </div>
 </div>
 </main>
@@ -280,8 +303,121 @@ tr:hover{background:#fafafa}
 <div class="modal-overlay" id="modal">
 <div class="modal" id="modalContent"></div>
 </div>
+</div><!-- end adminApp -->
 
 <script>
+// ===== API 설정 =====
+const API_BASE = 'http://localhost:3000';
+
+function getToken() {
+  return localStorage.getItem('jimbae_token');
+}
+
+async function api(path, options = {}) {
+  const token = getToken();
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
+      ...options.headers
+    }
+  });
+  if (res.status === 401) {
+    localStorage.removeItem('jimbae_token');
+    showLogin();
+    throw new Error('인증 만료');
+  }
+  return res.json();
+}
+
+// ===== 로그인 =====
+function showLogin() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminApp').style.display = 'none';
+}
+
+function showAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = '';
+  loadDashboard();
+}
+
+async function doLogin() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+
+  if (!phone || !password) {
+    errEl.textContent = '전화번호와 비밀번호를 입력해주세요.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch(API_BASE + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, password })
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      localStorage.setItem('jimbae_token', data.token);
+      showAdmin();
+    } else {
+      errEl.textContent = data.message || '로그인에 실패했습니다.';
+      errEl.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('로그인 에러:', err);
+    errEl.textContent = '서버에 연결할 수 없습니다.';
+    errEl.style.display = 'block';
+  }
+}
+
+// 초기 진입: 토큰 확인
+if (getToken()) {
+  showAdmin();
+} else {
+  showLogin();
+}
+
+// ===== 대시보드 API 로드 =====
+async function loadDashboard() {
+  try {
+    const data = await api('/api/admin/dashboard');
+    if (data) {
+      const kpis = document.querySelectorAll('#page-dashboard .kpi-value');
+      if (data.consultations_this_month !== undefined && kpis[0]) kpis[0].textContent = data.consultations_this_month;
+      if (data.kakao_conversions !== undefined && kpis[1]) kpis[1].textContent = data.kakao_conversions;
+      if (data.contracts_completed !== undefined && kpis[2]) kpis[2].textContent = data.contracts_completed;
+      if (data.site_visits !== undefined && kpis[3]) kpis[3].textContent = data.site_visits.toLocaleString();
+    }
+  } catch (err) {
+    console.error('대시보드 로드 실패:', err);
+  }
+
+  // 최근 상담문의 (대시보드 테이블)
+  try {
+    const data = await api('/api/admin/consultations?limit=5');
+    const items = data.consultations || data.data || data;
+    if (Array.isArray(items)) {
+      const tbody = document.querySelector('#page-dashboard table tbody');
+      if (tbody) {
+        tbody.innerHTML = items.map(function(c) {
+          var statusMap = { unread: '미확인', consulting: '상담중', done: '수임완료', closed: '종결' };
+          var classMap = { unread: 'status-unread', consulting: 'status-consulting', done: 'status-done', closed: 'status-closed' };
+          var st = c.status || 'unread';
+          return '<tr><td>' + esc(c.name) + '</td><td>' + esc(c.phone || c.tel) + '</td><td>' + esc(c.property_type || c.type || '') + '</td><td>' + esc(c.date || c.created_at || '') + '</td><td><span class="status ' + (classMap[st] || 'status-unread') + '">' + (statusMap[st] || st) + '</span></td></tr>';
+        }).join('');
+      }
+    }
+  } catch (err) {
+    console.error('최근 상담문의 로드 실패:', err);
+  }
+}
+
 // SPA nav
 function nav(page){
 document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
@@ -304,13 +440,51 @@ document.getElementById('heroDescP').textContent=document.getElementById('heroDe
 document.getElementById('heroCtaP').textContent=document.getElementById('heroCta').value;
 }
 
-// Services
+async function loadHero(){
+  try {
+    var data = await api('/api/content/hero');
+    var hero = data.data || data;
+    if (hero.main_copy) { document.getElementById('heroMain').value = hero.main_copy; }
+    if (hero.sub_copy) { document.getElementById('heroSub').value = hero.sub_copy; }
+    if (hero.description) { document.getElementById('heroDesc').value = hero.description; }
+    if (hero.cta_text) { document.getElementById('heroCta').value = hero.cta_text; }
+    updateHero();
+  } catch(err) { console.error('히어로 로드 실패:', err); }
+}
+
+async function saveHero(){
+  try {
+    await api('/api/admin/hero', {
+      method: 'PUT',
+      body: JSON.stringify({
+        main_copy: document.getElementById('heroMain').value,
+        sub_copy: document.getElementById('heroSub').value,
+        description: document.getElementById('heroDesc').value,
+        cta_text: document.getElementById('heroCta').value
+      })
+    });
+    alert('저장되었습니다');
+  } catch(err) { console.error('히어로 저장 실패:', err); alert('저장 실패'); }
+}
+
+// Services (fallback data)
 var services=[
 {title:'주택 명도',desc:'아파트, 빌라, 오피스텔 등 주거용 부동산 명도',targets:'임차인 미퇴거, 불법 점유, 계약 만료 후 미퇴거'},
 {title:'상가 명도',desc:'상가, 사무실 등 상업용 부동산 명도',targets:'임대차 분쟁, 권리금 분쟁, 무단 전대'},
 {title:'토지 명도',desc:'토지, 농지 등 비건물 부동산 명도',targets:'무단 점유, 경계 분쟁, 지상물 철거'},
 {title:'특수 명도',desc:'경매, 재개발 등 특수한 상황의 명도',targets:'경매 낙찰 후 명도, 재건축 이주, 공유물 분할'}
 ];
+
+async function loadServices(){
+  try {
+    var data = await api('/api/content/services');
+    var items = data.data || data;
+    if (Array.isArray(items) && items.length > 0) {
+      services = items.map(function(s) { return { title: s.title, desc: s.description || s.desc, targets: s.targets || '' }; });
+    }
+    renderServices();
+  } catch(err) { console.error('서비스 로드 실패:', err); renderServices(); }
+}
 function renderServices(){
 var h='';
 services.forEach(function(s,i){
@@ -329,8 +503,19 @@ showModal('<div class="modal-title">서비스 편집</div><div class="form-group
 }
 function saveSvc(i){services[i]={title:document.getElementById('meTitle').value,desc:document.getElementById('meDesc').value,targets:document.getElementById('meTargets').value};renderServices();closeModal()}
 
-// Pricing
+// Pricing (fallback data)
 var priceItems=['전화/카카오톡 상담','사건 분석 및 전략 수립','내용증명 발송','명도소송 소장 작성 및 제출','가처분 신청','강제집행 신청'];
+
+async function loadPricing(){
+  try {
+    var data = await api('/api/content/pricing');
+    var pricing = data.data || data;
+    if (pricing.price) document.getElementById('priceVal').value = pricing.price;
+    if (Array.isArray(pricing.items) && pricing.items.length > 0) priceItems = pricing.items;
+    if (pricing.tax_note) document.getElementById('priceTax').value = pricing.tax_note;
+    renderPriceItems();
+  } catch(err) { console.error('요금 로드 실패:', err); renderPriceItems(); }
+}
 function renderPriceItems(){
 var h='';
 priceItems.forEach(function(item,i){
@@ -340,7 +525,21 @@ document.getElementById('priceItems').innerHTML=h;
 }
 function addPriceItem(){priceItems.push('새 항목');renderPriceItems()}
 
-// Cases
+async function savePricing(){
+  try {
+    await api('/api/admin/pricing', {
+      method: 'PUT',
+      body: JSON.stringify({
+        price: document.getElementById('priceVal').value,
+        items: priceItems,
+        tax_note: document.getElementById('priceTax').value
+      })
+    });
+    alert('저장되었습니다');
+  } catch(err) { console.error('요금 저장 실패:', err); alert('저장 실패'); }
+}
+
+// Cases (fallback data)
 var cases=[
 {tag:'주택',title:'강남구 아파트 명도 성공',desc:'임차인 미퇴거 사안, 가처분 후 2주 내 해결',period:'약 6주',date:'2025-12'},
 {tag:'상가',title:'홍대 상가 무단점유 해결',desc:'계약 만료 후 미퇴거 임차인 강제집행 완료',period:'약 8주',date:'2025-11'},
@@ -349,6 +548,17 @@ var cases=[
 {tag:'주택',title:'빌라 다세대 명도 3건 일괄',desc:'동일 건물 내 3세대 동시 명도소송 진행',period:'약 10주',date:'2025-08'},
 {tag:'상가',title:'오피스텔 상가 복합 명도',desc:'상가 및 오피스텔 복합 건물 명도 완료',period:'약 7주',date:'2025-07'}
 ];
+
+async function loadCases(){
+  try {
+    var data = await api('/api/content/success_cases');
+    var items = data.data || data;
+    if (Array.isArray(items) && items.length > 0) {
+      cases = items.map(function(c) { return { tag: c.tag || c.category || '', title: c.title, desc: c.description || c.desc || '', period: c.period || '', date: c.date || '' }; });
+    }
+    renderCases();
+  } catch(err) { console.error('성공사례 로드 실패:', err); renderCases(); }
+}
 function renderCases(){
 var h='';
 cases.forEach(function(c,i){
@@ -367,11 +577,22 @@ if(i<0)cases.push(c);else cases[i]=c;
 renderCases();closeModal();
 }
 
-// Lawyers
+// Lawyers (fallback data)
 var lawyers=[
 {name:'신동운',position:'대표 변호사',edu:'서울대학교 법학전문대학원',career:'전 서울중앙지방법원 판사\n대한변호사협회 부동산법 분과위원\n명도소송 전문 15년'},
 {name:'김치현',position:'파트너 변호사',edu:'고려대학교 법학전문대학원',career:'전 법률구조공단 변호사\n부동산 경매 전문\n민사집행 분야 10년'}
 ];
+
+async function loadLawyers(){
+  try {
+    var data = await api('/api/content/attorneys');
+    var items = data.data || data;
+    if (Array.isArray(items) && items.length > 0) {
+      lawyers = items.map(function(l) { return { name: l.name, position: l.position || l.role || '', edu: l.education || l.edu || '', career: l.career || l.bio || '' }; });
+    }
+    renderLawyers();
+  } catch(err) { console.error('변호사 로드 실패:', err); renderLawyers(); }
+}
 function renderLawyers(){
 var h='';
 lawyers.forEach(function(l,i){
@@ -390,7 +611,7 @@ if(i<0)lawyers.push(l);else lawyers[i]=l;
 renderLawyers();closeModal();
 }
 
-// FAQ
+// FAQ (fallback data)
 var faqs=[
 {q:'명도소송 비용은 얼마인가요?',a:'기본 수임료 220만원(부가세 별도)이며, 소송 인지대/송달료 등 실비는 별도입니다.'},
 {q:'명도소송 기간은 얼마나 걸리나요?',a:'통상 가처분 2~4주, 본안소송 3~6개월이 소요됩니다. 가처분을 통해 조기 해결되는 경우도 많습니다.'},
@@ -398,6 +619,17 @@ var faqs=[
 {q:'상담은 어떻게 진행되나요?',a:'전화 또는 카카오톡으로 초기 상담 후, 필요시 대면 상담을 진행합니다. 초기 상담은 무료입니다.'},
 {q:'경매로 낙찰받은 부동산도 명도소송이 가능한가요?',a:'네, 경매 낙찰 후 기존 점유자에 대한 인도명령 또는 명도소송이 가능합니다.'}
 ];
+
+async function loadFaqs(){
+  try {
+    var data = await api('/api/content/faqs');
+    var items = data.data || data;
+    if (Array.isArray(items) && items.length > 0) {
+      faqs = items.map(function(f) { return { q: f.question || f.q, a: f.answer || f.a }; });
+    }
+    renderFaqs();
+  } catch(err) { console.error('FAQ 로드 실패:', err); renderFaqs(); }
+}
 function renderFaqs(){
 var h='';
 faqs.forEach(function(f,i){
@@ -411,9 +643,10 @@ document.getElementById('faqList').innerHTML=h;
 function moveFaq(i,d){var t=faqs[i];faqs[i]=faqs[i+d];faqs[i+d]=t;renderFaqs()}
 function addFaq(){faqs.push({q:'새 질문',a:'답변을 입력하세요'});renderFaqs()}
 
-// Inquiries
+// Inquiries (fallback data)
 var statusCycle=['미확인','상담중','수임완료','종결'];
 var statusClass=['status-unread','status-consulting','status-done','status-closed'];
+var statusKeyMap={'unread':0,'consulting':1,'done':2,'closed':3};
 var inquiries=[
 {name:'김영수',tel:'010-1234-5678',type:'주택',date:'2026-03-31',status:0,memo:'',detail:'아파트 임차인이 계약 만료 후에도 퇴거하지 않고 있음. 3개월째 연체 중.'},
 {name:'이미정',tel:'010-9876-5432',type:'상가',date:'2026-03-30',status:1,memo:'카톡 상담 완료',detail:'홍대 상가 무단 전대 문제. 임차인이 제3자에게 전대 후 연락 두절.'},
@@ -426,6 +659,20 @@ var inquiries=[
 {name:'송예린',tel:'010-6666-1111',type:'주택',date:'2026-03-23',status:2,memo:'가처분 신청 중',detail:'다세대 주택 2세대 동시 명도. 전세 사기 피해.'},
 {name:'임도현',tel:'010-1111-9999',type:'특수',date:'2026-03-22',status:3,memo:'종결 처리',detail:'재개발 구역 내 미이주 세입자 명도 완료.'}
 ];
+
+async function loadInquiries(){
+  try {
+    var data = await api('/api/admin/consultations');
+    var items = data.consultations || data.data || data;
+    if (Array.isArray(items) && items.length > 0) {
+      inquiries = items.map(function(c) {
+        var st = typeof c.status === 'number' ? c.status : (statusKeyMap[c.status] !== undefined ? statusKeyMap[c.status] : 0);
+        return { id: c.id, name: c.name, tel: c.phone || c.tel, type: c.property_type || c.type || '', date: c.date || c.created_at || '', status: st, memo: c.memo || c.note || '', detail: c.description || c.detail || '' };
+      });
+    }
+    renderInquiries();
+  } catch(err) { console.error('상담문의 로드 실패:', err); renderInquiries(); }
+}
 function renderInquiries(){
 var h='';
 inquiries.forEach(function(inq,i){
@@ -435,10 +682,20 @@ h+='<tr class="expand-content" id="expand-'+i+'"><td colspan="6"><div style="pad
 document.getElementById('inqBody').innerHTML=h;
 }
 function toggleExpand(i){document.getElementById('expand-'+i).classList.toggle('show')}
-function cycleStatus(e,i){
+async function cycleStatus(e,i){
 e.stopPropagation();
 inquiries[i].status=(inquiries[i].status+1)%4;
 renderInquiries();
+// API로 상태 업데이트
+var statusKeys=['unread','consulting','done','closed'];
+if (inquiries[i].id) {
+  try {
+    await api('/api/admin/consultations/' + inquiries[i].id, {
+      method: 'PUT',
+      body: JSON.stringify({ status: statusKeys[inquiries[i].status] })
+    });
+  } catch(err) { console.error('상태 변경 실패:', err); }
+}
 }
 
 // Process
@@ -470,6 +727,19 @@ document.getElementById('navOrder').innerHTML=h;
 }
 function moveNav(i,d){var t=navItems[i];navItems[i]=navItems[i+d];navItems[i+d]=t;renderNavOrder()}
 
+async function saveProcess(){
+  try {
+    await api('/api/admin/process', {
+      method: 'PUT',
+      body: JSON.stringify({
+        steps: procs,
+        legal_basis: document.getElementById('legalBasis').value
+      })
+    });
+    alert('저장되었습니다');
+  } catch(err) { console.error('진행절차 저장 실패:', err); alert('저장 실패'); }
+}
+
 // Modal
 function showModal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('modal').classList.add('show')}
 function closeModal(){document.getElementById('modal').classList.remove('show')}
@@ -478,8 +748,57 @@ document.getElementById('modal').addEventListener('click',function(e){if(e.targe
 // Escape
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-// Init
+// Settings
+async function loadSettings(){
+  try {
+    var data = await api('/api/settings');
+    var s = data.data || data;
+    var inputs = document.querySelectorAll('#page-settings input');
+    if (s.company_name && inputs[0]) inputs[0].value = s.company_name;
+    if (s.phone && inputs[1]) inputs[1].value = s.phone;
+    if (s.email && inputs[2]) inputs[2].value = s.email;
+    if (s.address && inputs[3]) inputs[3].value = s.address;
+    if (s.kakao_url && inputs[4]) inputs[4].value = s.kakao_url;
+    var textareas = document.querySelectorAll('#page-settings textarea');
+    if (s.footer_text && textareas[0]) textareas[0].value = s.footer_text;
+    if (s.disclaimer && textareas[1]) textareas[1].value = s.disclaimer;
+  } catch(err) { console.error('설정 로드 실패:', err); }
+}
+
+async function saveSettings(){
+  try {
+    var inputs = document.querySelectorAll('#page-settings input');
+    var textareas = document.querySelectorAll('#page-settings textarea');
+    await api('/api/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify({
+        company_name: inputs[0] ? inputs[0].value : '',
+        phone: inputs[1] ? inputs[1].value : '',
+        email: inputs[2] ? inputs[2].value : '',
+        address: inputs[3] ? inputs[3].value : '',
+        kakao_url: inputs[4] ? inputs[4].value : '',
+        footer_text: textareas[0] ? textareas[0].value : '',
+        disclaimer: textareas[1] ? textareas[1].value : ''
+      })
+    });
+    alert('저장되었습니다');
+  } catch(err) { console.error('설정 저장 실패:', err); alert('저장 실패'); }
+}
+
+// Init: render fallback first, then load from API
 renderServices();renderPriceItems();renderCases();renderLawyers();renderFaqs();renderInquiries();renderProcs();renderNavOrder();
+
+// Load from API (if logged in)
+if (getToken()) {
+  loadHero();
+  loadServices();
+  loadPricing();
+  loadCases();
+  loadLawyers();
+  loadFaqs();
+  loadInquiries();
+  loadSettings();
+}
 </script>
 </body>
 </html>
