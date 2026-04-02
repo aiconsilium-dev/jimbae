@@ -8,24 +8,22 @@
 <link rel="stylesheet" href="common.css">
 <style>
 .filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:48px}
-.filter__btn{padding:8px 20px;font-size:14px;font-weight:600;border:1px solid var(--gray-border);cursor:pointer;transition:all .2s;background:#fff}
-.filter__btn:hover,.filter__btn.active{background:var(--black);color:#fff;border-color:var(--black)}
-.cases-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.case-card{padding:40px}
-.case-card__type{font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
-.case-card__title{font-size:20px;font-weight:900;letter-spacing:-0.02em;margin-bottom:12px}
-.case-card__desc{font-size:14px;color:var(--gray-text);line-height:1.7;margin-bottom:20px}
-.case-card__meta{display:flex;gap:24px;font-size:13px;color:var(--gray-light);border-top:1px solid var(--gray-border);padding-top:16px}
+.filter__btn{padding:10px 22px;font-size:14px;font-weight:600;border:1px solid var(--gray-border);cursor:pointer;transition:all .2s;background:#fff;border-radius:100px}
+.filter__btn:hover,.filter__btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cases-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.case-card{padding:36px;border-radius:var(--radius)}
+.case-card__type{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.case-card__title{font-size:18px;font-weight:900;letter-spacing:-0.02em;margin-bottom:10px}
+.case-card__desc{font-size:14px;color:var(--gray-text);line-height:1.8;margin-bottom:16px}
+.case-card__meta{display:flex;gap:20px;font-size:13px;color:var(--gray-light);border-top:1px solid var(--gray-border);padding-top:14px;flex-wrap:wrap}
 .case-card__meta strong{color:var(--black);font-weight:600}
-.case-card__result{display:inline-block;padding:4px 12px;font-size:12px;font-weight:700;background:var(--orange);color:#fff;margin-top:12px}
-@media(max-width:768px){
-  .cases-grid{grid-template-columns:1fr}
-}
+.case-card__result{display:inline-block;padding:4px 14px;font-size:12px;font-weight:700;background:var(--accent);color:#fff;margin-top:12px;border-radius:100px}
+@media(max-width:768px){.cases-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<nav class="nav"><div class="nav__inner"><a href="index.html" class="nav__logo">짐빼</a><div class="nav__links"><a href="services.html">서비스</a><a href="process.html">진행절차</a><a href="pricing.html">비용안내</a><a href="cases.html">해결사례</a><a href="attorney.html">변호사</a><a href="faq.html">자주 묻는 질문</a></div><div class="nav__cta"><a href="contact.html" class="btn btn--primary btn--small">상담하기</a></div><div class="nav__mobile" id="navMobile"><span></span><span></span><span></span></div></div></nav>
-<div class="mobile-menu" id="mobileMenu"><a href="services.html">서비스</a><a href="process.html">진행절차</a><a href="pricing.html">비용안내</a><a href="cases.html">해결사례</a><a href="attorney.html">변호사</a><a href="faq.html">자주 묻는 질문</a><a href="contact.html">상담하기</a></div>
+<nav class="nav"><div class="nav__inner"><a href="index.html" class="nav__logo">짐빼</a><div class="nav__links"><a href="index.html#about">짐빼소개</a><a href="services.html">서비스안내</a><a href="pricing.html">비용안내</a><a href="cases.html">해결사례</a><a href="attorney.html">변호사소개</a><a href="faq.html">자주묻는질문</a></div><div class="nav__cta"><a href="contact.html" class="btn btn--primary btn--small">상담하기</a></div><div class="nav__mobile" id="navMobile"><span></span><span></span><span></span></div></div></nav>
+<div class="mobile-menu" id="mobileMenu"><a href="index.html#about">짐빼소개</a><a href="services.html">서비스안내</a><a href="pricing.html">비용안내</a><a href="cases.html">해결사례</a><a href="attorney.html">변호사소개</a><a href="faq.html">자주묻는질문</a><a href="contact.html">상담하기</a></div>
 
 <div class="page-header">
   <div class="container">
@@ -42,85 +40,119 @@
       <button class="filter__btn" data-filter="housing">주택</button>
       <button class="filter__btn" data-filter="commercial">상가</button>
       <button class="filter__btn" data-filter="land">토지</button>
+      <button class="filter__btn" data-filter="special">특수</button>
     </div>
     <div class="cases-grid" id="casesGrid">
+
       <div class="card case-card reveal" data-type="housing">
         <div class="case-card__type">주택</div>
         <div class="case-card__title">서울 강남구 오피스텔 — 월세 8개월 미납</div>
-        <p class="case-card__desc">임차인이 월세를 8개월간 미납하고 연락을 차단한 사안. 점유이전금지 가처분 후 명도소송을 진행하여 판결 확정 후 강제집행 완료.</p>
+        <p class="case-card__desc">IT 회사 대표 P씨(42세). 투자용 오피스텔의 세입자가 8개월째 월세를 미납하고 연락을 차단. 내용증명도 반송되는 상황. 점유이전금지 가처분 후 본안소송을 동시에 진행. 세입자가 제3자에게 전대 시도한 정황을 포착하여 가처분 결정 즉일 집행. 본안 판결 후 52일 만에 명도 완료. 밀린 월세 전액 보증금에서 공제.</p>
         <div class="case-card__meta">
           <span>소요: <strong>52일</strong></span>
-          <span>유형: <strong>월세 미납</strong></span>
+          <span>보증금: <strong>5,000만원</strong></span>
+          <span>미납: <strong>640만원</strong></span>
         </div>
-        <div class="case-card__result">명도 완료</div>
+        <div class="case-card__result">명도 + 미납차임 전액 회수</div>
       </div>
+
       <div class="card case-card reveal" data-type="commercial">
         <div class="case-card__type">상가</div>
-        <div class="case-card__title">경기 수원시 상가 — 계약 만료 후 미퇴거</div>
-        <p class="case-card__desc">계약기간 만료 후 갱신을 거절했으나 임차인이 퇴거를 거부한 사안. 계약 해지의 적법성을 입증하여 승소.</p>
+        <div class="case-card__title">경기 수원시 상가 점포 — 계약 만료 후 15개월 미퇴거</div>
+        <p class="case-card__desc">건물주 J씨(58세). 1층 상가 세입자가 계약 만료 후 갱신 거절에도 15개월째 퇴거 거부. 상가건물임대차보호법상 갱신 거절 적법 사유(건물 철거 후 재건축 예정)를 입증. 세입자 측 권리금 청구도 방어하여 추가 부담 없이 명도 완료.</p>
         <div class="case-card__meta">
           <span>소요: <strong>68일</strong></span>
-          <span>유형: <strong>계약 만료</strong></span>
+          <span>보증금: <strong>8,000만원</strong></span>
         </div>
-        <div class="case-card__result">명도 완료</div>
+        <div class="case-card__result">명도 + 권리금 청구 기각</div>
       </div>
+
       <div class="card case-card reveal" data-type="housing">
         <div class="case-card__type">주택</div>
-        <div class="case-card__title">서울 마포구 빌라 — 무단 전대</div>
-        <p class="case-card__desc">임차인이 임대인 동의 없이 제3자에게 전대한 사안. 계약 위반을 이유로 해지 통보 후 명도소송 진행.</p>
+        <div class="case-card__title">서울 마포구 빌라 — 무단 전대 + 연락 두절</div>
+        <p class="case-card__desc">해외 거주 교포 K씨(51세). 한국 빌라를 임대 중이었는데, 세입자가 무단으로 지인에게 전대하고 본인은 타 지역으로 이사. 실 점유자와 임차인 모두를 상대로 소송 진행. 공시송달 후 결석판결 확보, 실 점유자에 대한 강제집행 41일 만에 완료.</p>
         <div class="case-card__meta">
           <span>소요: <strong>41일</strong></span>
-          <span>유형: <strong>무단 전대</strong></span>
+          <span>보증금: <strong>3,000만원</strong></span>
         </div>
         <div class="case-card__result">명도 완료</div>
       </div>
+
       <div class="card case-card reveal" data-type="land">
         <div class="case-card__type">토지</div>
-        <div class="case-card__title">경기 용인시 토지 — 무단 점유 + 불법 건축물</div>
-        <p class="case-card__desc">상속받은 토지에 인접 주민이 불법 건축물을 설치하고 무단 점유한 사안. 건축물 철거 및 토지 인도 판결.</p>
+        <div class="case-card__title">경기 용인시 토지 — 무단 점유 + 불법 컨테이너</div>
+        <p class="case-card__desc">토지 상속인 C씨(63세). 부친에게 상속받은 농지에 인접 주민이 컨테이너 2동을 설치하고 10년 넘게 무단 점유. 취득시효 주장을 반박하기 위해 점유 시점과 요건 미충족을 입증. 건축물 철거 및 토지 인도 판결 확보 후 강제집행.</p>
         <div class="case-card__meta">
           <span>소요: <strong>89일</strong></span>
-          <span>유형: <strong>무단 점유</strong></span>
+          <span>토지: <strong>330m2</strong></span>
         </div>
-        <div class="case-card__result">철거 + 인도 완료</div>
+        <div class="case-card__result">철거 + 토지 인도 완료</div>
       </div>
+
       <div class="card case-card reveal" data-type="housing">
         <div class="case-card__type">주택</div>
-        <div class="case-card__title">인천 남동구 아파트 — 월세 5개월 미납</div>
-        <p class="case-card__desc">내용증명 발송 후에도 연락이 두절된 임차인에 대해 명도소송 진행. 공시송달 후 판결 선고.</p>
+        <div class="case-card__title">인천 남동구 아파트 — 월세 11개월 미납, 야간 소음</div>
+        <p class="case-card__desc">신혼 부부 임대인 H씨(34세). 세입자가 월세 11개월 미납, 이웃 민원(야간 소음) 지속. 내용증명 3회 발송 후에도 무응답. 계약 해지 + 명도소송 + 밀린 월세 청구를 동시에 진행. 공시송달 후 판결 선고, 63일 만에 명도와 미납 차임 회수 완료.</p>
         <div class="case-card__meta">
           <span>소요: <strong>63일</strong></span>
-          <span>유형: <strong>월세 미납</strong></span>
+          <span>보증금: <strong>2,000만원</strong></span>
+          <span>미납: <strong>880만원</strong></span>
         </div>
-        <div class="case-card__result">명도 완료</div>
+        <div class="case-card__result">명도 + 미납차임 회수</div>
       </div>
+
       <div class="card case-card reveal" data-type="commercial">
         <div class="case-card__type">상가</div>
-        <div class="case-card__title">서울 종로구 사무실 — 용도 변경 + 차임 미납</div>
-        <p class="case-card__desc">사무실을 무허가 음식점으로 변경하고 차임을 4개월간 미납한 사안. 복합 사유로 해지 후 명도 완료.</p>
+        <div class="case-card__title">서울 종로구 사무실 — 무허가 용도 변경 + 차임 미납</div>
+        <p class="case-card__desc">빌딩 소유주 L씨(47세). 3층 사무실 임차인이 무허가로 음식점을 운영하며 차임 4개월 미납. 소방법 위반 리스크까지 건물주에게 전가. 용도 변경에 따른 계약 위반 + 차임 미납 복합 사유로 즉시 해지 후 명도소송 진행. 조정 성립, 55일 만에 자진 퇴거 및 원상복구 완료.</p>
         <div class="case-card__meta">
           <span>소요: <strong>55일</strong></span>
-          <span>유형: <strong>용도 변경</strong></span>
+          <span>보증금: <strong>4,000만원</strong></span>
         </div>
-        <div class="case-card__result">명도 완료</div>
+        <div class="case-card__result">자진 퇴거 + 원상복구</div>
       </div>
+
+      <div class="card case-card reveal" data-type="housing">
+        <div class="case-card__type">주택</div>
+        <div class="case-card__title">서울 송파구 아파트 — 계약 종료 후 미퇴거 (전세)</div>
+        <p class="case-card__desc">은퇴 교사 W씨(61세). 전세 계약 만료 후 보증금 반환을 완료했으나 세입자가 "이사 갈 곳을 찾고 있다"며 4개월째 미퇴거. 보증금을 이미 돌려줬기 때문에 공제할 수단도 없는 상황. 명도소송 접수 후 세입자에게 소장 부본 송달. 변론기일 전 세입자가 자진 퇴거 의사를 밝혀 37일 만에 종결.</p>
+        <div class="case-card__meta">
+          <span>소요: <strong>37일</strong></span>
+          <span>보증금: <strong>반환 완료 상태</strong></span>
+        </div>
+        <div class="case-card__result">자진 퇴거</div>
+      </div>
+
+      <div class="card case-card reveal" data-type="special">
+        <div class="case-card__type">특수</div>
+        <div class="case-card__title">경기 안산시 공장 — 임차인 법인 폐업 + 잔존물</div>
+        <p class="case-card__desc">공장 소유주 B씨(55세). 임차 법인이 폐업 후 대표이사 행방불명. 공장 내부에 기계 설비와 원자재가 방치된 상태. 법인 대표이사와 청산인을 공동 피고로 소송 진행. 잔존 동산에 대한 처리 권한까지 판결에 포함시켜, 법적으로 안전하게 정리. 95일 소요.</p>
+        <div class="case-card__meta">
+          <span>소요: <strong>95일</strong></span>
+          <span>면적: <strong>660m2</strong></span>
+        </div>
+        <div class="case-card__result">명도 + 잔존물 처리 완료</div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<section class="cta-band" style="background:var(--orange);padding:80px 0;text-align:center;color:#fff">
+<section class="cta-band" style="padding:80px 0">
   <div class="container">
     <div class="t-h3 reveal" style="color:#fff;margin-bottom:16px">비슷한 상황이라면, 상담부터 시작하세요.</div>
-    <a href="contact.html" class="btn reveal" style="background:#fff;color:var(--orange);font-weight:700">카카오톡 상담하기</a>
+    <a href="contact.html" class="btn reveal" style="background:#fff;color:var(--accent);font-weight:700">카카오톡 상담하기</a>
   </div>
 </section>
 
-<footer class="footer"><div class="container"><div class="footer__inner"><div class="footer__brand"><h4>짐빼</h4><p style="font-size:13px">상담은 길게, 소송은 짧게.</p></div><div class="footer__links"><h5>서비스</h5><a href="services.html">서비스 안내</a><a href="process.html">진행절차</a><a href="pricing.html">비용안내</a></div><div class="footer__links"><h5>법인 안내</h5><a href="attorney.html">변호사 소개</a><a href="faq.html">자주 묻는 질문</a><a href="contact.html">상담하기</a></div></div><div class="footer__bottom"><p>법무법인 인성파트너스 | 대표변호사 신동운</p><div class="footer__disclaimer">본 웹사이트는 법률서비스에 관한 일반적인 정보를 제공하며, 구체적인 법률 조언에 해당하지 않습니다. 광고물 승인번호: 제2024-000호</div></div></div></footer>
+<footer class="footer"><div class="container"><div class="footer__inner"><div class="footer__brand"><h4>짐빼</h4><p style="font-size:13px">상담은 길게, 소송은 짧게.</p></div><div class="footer__links"><h5>서비스</h5><a href="services.html">서비스 안내</a><a href="process.html">진행절차</a><a href="pricing.html">비용안내</a></div><div class="footer__links"><h5>법인 안내</h5><a href="attorney.html">변호사 소개</a><a href="faq.html">자주 묻는 질문</a><a href="contact.html">상담하기</a></div><div class="footer__links"><h5>패밀리사이트</h5><a href="#">인성회계법인</a><a href="#">인성세무법인</a></div></div><div class="footer__bottom"><p>법무법인 인성파트너스 | 대표변호사 신동운</p><div class="footer__disclaimer">본 웹사이트는 법률서비스에 관한 일반적인 정보를 제공하며, 구체적인 법률 조언에 해당하지 않습니다. 광고물 승인번호: 제2024-000호</div></div></div></footer>
+
+<!-- FLOATING KAKAO CTA -->
+<div class="floating-cta"><a href="contact.html" class="floating-cta__btn"><span class="floating-cta__icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3C6.477 3 2 6.463 2 10.691c0 2.724 1.8 5.116 4.517 6.479-.14.507-.905 3.27-.937 3.478 0 0-.019.157.083.217.102.06.222.028.222.028.293-.041 3.397-2.218 3.936-2.594.699.098 1.42.15 2.179.15 5.523 0 10-3.462 10-7.758C22 6.463 17.523 3 12 3z" fill="#3C1E1E"/></svg></span>카카오톡 상담하기</a></div>
+
 <script>
 document.getElementById('navMobile').addEventListener('click',function(){document.getElementById('mobileMenu').classList.toggle('active')});
 var reveals=document.querySelectorAll('.reveal');var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:0.15});reveals.forEach(function(el){observer.observe(el)});
-
-/* Filter */
 var filterBtns=document.querySelectorAll('.filter__btn');
 var cards=document.querySelectorAll('.case-card');
 filterBtns.forEach(function(btn){

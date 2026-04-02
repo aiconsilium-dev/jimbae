@@ -9,16 +9,20 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
 
 /* ===== VARIABLES ===== */
 :root{
-  --orange:#E85D2A;
-  --orange-hover:#d14f20;
+  --accent:#0EA5A0;
+  --accent-hover:#0C8F8B;
+  --accent-light:#E6F7F7;
+  --accent-glow:rgba(14,165,160,.12);
   --black:#111;
-  --dark:#1a1a1a;
-  --gray-text:#666;
+  --dark:#0f1419;
+  --gray-text:#555;
   --gray-light:#888;
   --gray-border:#e5e7eb;
-  --bg-light:#f9f9f9;
+  --bg-light:#f7f9fa;
   --max-w:1200px;
   --section-py:120px;
+  --radius:12px;
+  --radius-lg:20px;
 }
 
 /* ===== TYPOGRAPHY ===== */
@@ -28,7 +32,7 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
 .t-h3{font-size:clamp(18px,2vw,24px);font-weight:700;line-height:1.3}
 .t-body{font-size:16px;color:var(--gray-text);line-height:1.7}
 .t-small{font-size:14px;color:var(--gray-light)}
-.t-orange{color:var(--orange)}
+.t-accent{color:var(--accent)}
 
 /* ===== LAYOUT ===== */
 .container{max-width:var(--max-w);margin:0 auto;padding:0 40px}
@@ -38,26 +42,28 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
 .section--light{background:var(--bg-light)}
 
 /* ===== BUTTONS ===== */
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 36px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;border-radius:100px}
-.btn--primary{background:var(--orange);color:#fff}
-.btn--primary:hover{background:var(--orange-hover)}
-.btn--outline{border:1.5px solid var(--black);color:var(--black);background:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 36px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s;border-radius:100px}
+.btn--primary{background:var(--accent);color:#fff}
+.btn--primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 16px rgba(14,165,160,.25)}
+.btn--outline{border:1.5px solid var(--black);color:var(--black);background:transparent;border-radius:100px}
 .btn--outline:hover{background:var(--black);color:#fff}
-.btn--outline-white{border:1.5px solid #fff;color:#fff;background:transparent}
+.btn--outline-white{border:1.5px solid #fff;color:#fff;background:transparent;border-radius:100px}
 .btn--outline-white:hover{background:#fff;color:var(--black)}
 .btn--small{padding:10px 24px;font-size:14px}
+.btn--kakao{background:#FEE500;color:#3C1E1E;font-weight:700}
+.btn--kakao:hover{background:#F5DC00;transform:translateY(-1px)}
 
 /* ===== CARDS ===== */
-.card{border:1px solid var(--gray-border);padding:40px;background:#fff;transition:box-shadow .2s}
-.card:hover{box-shadow:0 8px 30px rgba(0,0,0,.06)}
+.card{border:1px solid var(--gray-border);padding:40px;background:#fff;transition:all .3s;border-radius:var(--radius)}
+.card:hover{box-shadow:0 12px 40px rgba(0,0,0,.06);transform:translateY(-2px)}
 
 /* ===== NAVIGATION ===== */
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--gray-border);transition:transform .3s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-border);transition:transform .3s}
 .nav__inner{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:var(--max-w);margin:0 auto;padding:0 40px}
 .nav__logo{font-size:22px;font-weight:900;letter-spacing:-0.03em}
-.nav__links{display:flex;gap:32px}
+.nav__links{display:flex;gap:28px}
 .nav__links a{font-size:14px;font-weight:500;color:var(--gray-text);transition:color .2s}
-.nav__links a:hover{color:var(--black)}
+.nav__links a:hover{color:var(--accent)}
 .nav__cta .btn{padding:8px 24px;font-size:14px}
 .nav__mobile{display:none;flex-direction:column;gap:4px;cursor:pointer;width:24px}
 .nav__mobile span{display:block;width:100%;height:2px;background:var(--black);transition:all .3s}
@@ -84,9 +90,15 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
 
 /* ===== PAGE HEADER ===== */
 .page-header{padding:140px 0 60px;border-bottom:1px solid var(--gray-border)}
-.page-header__label{font-size:13px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px}
+.page-header__label{font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px}
 .page-header__title{font-size:clamp(28px,4vw,48px);font-weight:900;letter-spacing:-0.03em;line-height:1.15;margin-bottom:16px}
 .page-header__desc{font-size:16px;color:var(--gray-text);max-width:600px}
+
+/* ===== FLOATING CTA ===== */
+.floating-cta{position:fixed;bottom:28px;right:28px;z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.floating-cta__btn{display:flex;align-items:center;gap:10px;padding:14px 24px;background:#FEE500;color:#3C1E1E;font-weight:700;font-size:15px;border-radius:100px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:all .25s;text-decoration:none}
+.floating-cta__btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,0,0,.2)}
+.floating-cta__icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:1200px){
@@ -100,6 +112,8 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
   .nav__mobile{display:flex}
   .card{padding:28px}
   .btn{padding:12px 28px;font-size:15px}
+  .floating-cta{bottom:20px;right:20px}
+  .floating-cta__btn{padding:12px 20px;font-size:14px}
 }
 @media(max-width:480px){
   :root{--section-py:60px}
