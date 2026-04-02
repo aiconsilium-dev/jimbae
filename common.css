@@ -18,7 +18,7 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
   --text-light:#8896a8;
   --border:#e2e8f0;
   --bg:#fff;
-  --bg-cool:#f0f5ff;
+  --bg-cool:#f5f7fb;
   --bg-warm:#f8fafc;
   --max-w:1140px;
   --section-py:100px;
@@ -48,8 +48,8 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
 .btn--accent:hover{background:#059bb3;box-shadow:0 4px 12px rgba(6,182,212,.3)}
 .btn--outline{border:1.5px solid var(--border);color:var(--text);background:#fff}
 .btn--outline:hover{border-color:var(--primary);color:var(--primary)}
-.btn--kakao{background:#FEE500;color:#3B1C0A;font-weight:700}
-.btn--kakao:hover{background:#f5dc00}
+.btn--kakao{background:var(--primary);color:#fff;font-weight:700}
+.btn--kakao:hover{background:#162e6e}
 .btn--ghost{color:var(--primary);font-weight:600;padding:13px 20px}
 .btn--ghost:hover{background:var(--bg-cool)}
 .btn--sm{padding:10px 20px;font-size:14px}
@@ -98,8 +98,8 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
 
 /* ===== FLOATING CTA ===== */
 .floating-cta{position:fixed;bottom:24px;right:24px;z-index:900}
-.floating-cta__btn{display:flex;align-items:center;gap:8px;padding:13px 22px;background:#FEE500;color:#3B1C0A;font-weight:700;font-size:14px;border-radius:100px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.12);transition:all .2s;text-decoration:none}
-.floating-cta__btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.floating-cta__btn{display:flex;align-items:center;gap:8px;padding:13px 22px;background:var(--primary);color:#fff;font-weight:700;font-size:14px;border-radius:100px;cursor:pointer;box-shadow:0 4px 20px rgba(30,58,138,.2);transition:all .2s;text-decoration:none}
+.floating-cta__btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(30,58,138,.3);background:#162e6e}
 .floating-cta__icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
 
 /* ===== RESPONSIVE ===== */
