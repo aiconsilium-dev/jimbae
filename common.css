@@ -21,7 +21,7 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
   --bg-cool:#f7f8fa;
   --bg-warm:#f8fafc;
   --max-w:1140px;
-  --section-py:100px;
+  --section-py:80px;
   --r:10px;
   --r-lg:16px;
 }
@@ -107,7 +107,7 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
   .container{padding:0 24px}
 }
 @media(max-width:768px){
-  :root{--section-py:72px}
+  :root{--section-py:60px}
   .container{padding:0 20px}
   .nav__links,.nav__cta{display:none}
   .nav__mobile{display:flex}
@@ -117,7 +117,7 @@ button,input,textarea,select{font:inherit;border:none;outline:none;background:no
   .floating-cta__btn{padding:11px 18px;font-size:13px}
 }
 @media(max-width:480px){
-  :root{--section-py:56px}
+  :root{--section-py:48px}
   .container{padding:0 16px}
   .nav__inner{padding:0 16px}
 }
