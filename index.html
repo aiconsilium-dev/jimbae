@@ -32,7 +32,7 @@
 
 /* HERO */
 .hero{padding:140px 0 72px;min-height:88vh;display:flex;align-items:center}
-.hero__grid{display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center}
+.hero__grid{display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:center}
 .hero__text{max-width:560px}
 .hero__tag{display:inline-block;padding:5px 14px;font-size:12px;font-weight:600;color:var(--primary);background:#f1f5f9;border:1px solid #e2e8f0;border-radius:100px;margin-bottom:18px}
 .hero__title{margin-bottom:18px;min-height:1.2em}
@@ -45,9 +45,8 @@
 .hero__vcard:hover{border-color:var(--cta);box-shadow:0 4px 20px rgba(11,19,43,.06)}
 .hero__vcard__num{font-size:28px;font-weight:900;color:var(--primary);letter-spacing:-0.03em;margin-bottom:2px}
 .hero__vcard__label{font-size:13px;color:var(--text-secondary);line-height:1.5}
-.hero__vcard--accent{border-color:var(--cta);background:var(--primary);color:#fff}
-.hero__vcard--accent .hero__vcard__num{color:#fff}
-.hero__vcard--accent .hero__vcard__label{color:rgba(255,255,255,.7)}
+.hero__vcard--accent{border-color:var(--cta);border-width:2px}
+.hero__vcard--accent .hero__vcard__num{color:var(--cta)}
 
 /* SPEEDBAR */
 .speedbar{background:var(--dark);padding:32px 0;color:#fff}
@@ -155,8 +154,8 @@
 .cta-band{padding:64px 0;text-align:center;background:var(--primary);color:#fff}
 .cta-band__title{font-size:clamp(20px,2.8vw,30px);font-weight:800;letter-spacing:-0.02em;margin-bottom:10px;word-break:keep-all}
 .cta-band__sub{font-size:14.5px;opacity:.7;margin-bottom:28px;word-break:keep-all}
-.cta-band .btn--cta{background:var(--orange);color:#fff;font-weight:700;font-size:16px;padding:14px 32px}
-.cta-band .btn--cta:hover{background:#e8670d}
+.cta-band .btn{background:#fff;color:var(--primary);font-weight:700;font-size:16px;padding:14px 32px;border-radius:8px}
+.cta-band .btn:hover{background:#f1f5f9}
 
 /* SEC UTIL */
 .sec-label{font-size:12px;font-weight:600;color:var(--cta);letter-spacing:.04em;margin-bottom:8px}
@@ -242,7 +241,7 @@
         <p class="hero__sub" id="heroSub">일단 상담부터 받으세요.
 짐빼는 상담은 길게, 소송은 짧게 진행해드립니다.</p>
         <div class="hero__ctas">
-          <a href="contact.html" class="btn btn--cta" style="background:var(--orange);color:#fff">카카오톡 상담하기</a>
+          <a href="contact.html" class="btn btn--primary">카카오톡 상담하기</a>
           <a href="#process" class="btn btn--outline">진행절차 보기</a>
         </div>
         <p class="hero__price">명도소송 <strong>150만원</strong>부터 · 가처분 포함 <strong>220만원</strong> · 변호사 직접 담당</p>
@@ -494,7 +493,7 @@
   <div class="container">
     <div class="cta-band__title reveal">명도소송, 더 이상 혼자 고민하지 마세요.</div>
     <div class="cta-band__sub reveal">짐빼가 처음부터 끝까지 함께합니다.</div>
-    <a href="contact.html" class="btn btn--cta reveal">카카오톡 상담하기</a>
+    <a href="contact.html" class="btn reveal">카카오톡 상담하기</a>
   </div>
 </section>
 
