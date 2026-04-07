@@ -10,43 +10,54 @@
 <link rel="stylesheet" href="common.css">
 <style>
 /* LOADING */
-.loading{position:fixed;inset:0;z-index:9999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s,visibility .4s}
+.loading{position:fixed;inset:0;z-index:9999;background:var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s,visibility .4s}
 .loading.done{opacity:0;visibility:hidden;pointer-events:none}
-.ld-logo{position:absolute;top:20px;left:32px;font-size:20px;font-weight:900;color:var(--primary);letter-spacing:-0.03em}
+.ld-logo{position:absolute;top:20px;left:32px;font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.03em}
 .ld-scene{position:relative;width:320px;height:200px}
-.ld-bld{position:absolute;bottom:0;background:var(--primary);border-radius:3px 3px 0 0}
+.ld-bld{position:absolute;bottom:0;background:rgba(255,255,255,.12);border-radius:3px 3px 0 0}
 .ld-bld--a{left:20px;width:44px;height:150px}
 .ld-bld--b{left:76px;width:58px;height:185px}
 .ld-bld--c{left:146px;width:46px;height:130px}
 .ld-bld--d{left:204px;width:60px;height:168px}
-.ld-win{position:absolute;width:9px;height:7px;background:rgba(255,255,255,.15);border-radius:1px}
+.ld-win{position:absolute;width:9px;height:7px;background:rgba(255,255,255,.06);border-radius:1px}
 .ld-box{position:absolute;width:16px;height:16px;background:var(--cta);border-radius:3px;opacity:0}
 .ld-box--1{left:98px;bottom:44px;animation:bfly 1.8s .15s forwards}
 .ld-box--2{left:52px;bottom:76px;animation:bfly 1.8s .4s forwards}
 .ld-box--3{left:230px;bottom:58px;animation:bfly 1.8s .65s forwards}
 .ld-box--4{left:160px;bottom:32px;animation:bfly 1.8s .9s forwards}
 @keyframes bfly{0%{opacity:1;transform:translate(0,0)}30%{opacity:1;transform:translate(14px,-10px)}100%{opacity:0;transform:translate(180px,-45px) scale(.3)}}
-.ld-bar{width:220px;height:3px;background:#e2e8f0;border-radius:2px;margin-top:16px;overflow:hidden}
+.ld-bar{width:220px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:16px;overflow:hidden}
 .ld-fill{height:100%;width:0;background:var(--cta);border-radius:2px;animation:lfill 1.6s ease-out forwards}
 @keyframes lfill{to{width:100%}}
 
-/* HERO */
-.hero{padding:140px 0 72px;min-height:88vh;display:flex;align-items:center}
-.hero__grid{display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:center}
-.hero__text{max-width:560px}
-.hero__tag{display:inline-block;padding:5px 14px;font-size:12px;font-weight:600;color:var(--primary);background:#f1f5f9;border:1px solid #e2e8f0;border-radius:100px;margin-bottom:18px}
-.hero__title{margin-bottom:18px;min-height:1.2em}
-.hero__sub{font-size:15.5px;color:var(--text-secondary);line-height:1.85;margin-bottom:28px;word-break:keep-all;white-space:pre-line;min-height:4.5em}
-.hero__ctas{display:flex;gap:10px;margin-bottom:20px}
-.hero__price{font-size:14px;color:var(--text-light)}.hero__price strong{color:var(--text)}
-/* hero right visual */
-.hero__visual{display:flex;flex-direction:column;gap:12px}
-.hero__vcard{padding:20px 24px;border:1px solid var(--border);border-radius:var(--r-lg);background:#fff;transition:all .3s}
-.hero__vcard:hover{border-color:var(--cta);box-shadow:0 4px 20px rgba(11,19,43,.06)}
-.hero__vcard__num{font-size:28px;font-weight:900;color:var(--primary);letter-spacing:-0.03em;margin-bottom:2px}
-.hero__vcard__label{font-size:13px;color:var(--text-secondary);line-height:1.5}
-.hero__vcard--accent{border-color:var(--cta);border-width:2px}
-.hero__vcard--accent .hero__vcard__num{color:var(--cta)}
+/* HERO — full dark */
+.hero{background:var(--primary);color:#fff;min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.hero__content{position:relative;z-index:1;padding:0 0 80px}
+.hero__title{font-size:clamp(32px,5.5vw,64px);font-weight:900;letter-spacing:-0.04em;line-height:1.1;margin-bottom:20px;word-break:keep-all;min-height:1.1em}
+.hero__title .hl{color:var(--cta)}
+.hero__sub{font-size:clamp(15px,1.4vw,18px);color:rgba(255,255,255,.6);line-height:1.8;margin-bottom:36px;max-width:520px;word-break:keep-all;white-space:pre-line;min-height:3.6em}
+.hero__ctas{display:flex;gap:12px;margin-bottom:24px}
+.hero__ctas .btn--w{background:#fff;color:var(--primary);font-weight:700}
+.hero__ctas .btn--w:hover{background:#f1f5f9}
+.hero__ctas .btn--ghost-w{border:1.5px solid rgba(255,255,255,.25);color:#fff;background:transparent}
+.hero__ctas .btn--ghost-w:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.05)}
+.hero__price{font-size:14px;color:rgba(255,255,255,.4)}.hero__price strong{color:rgba(255,255,255,.7)}
+/* hero bottom stats strip */
+.hero__stats{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.06);z-index:1}
+.hero__stats-inner{display:grid;grid-template-columns:repeat(3,1fr);max-width:var(--max-w);margin:0 auto;padding:0 32px}
+.hero__stat{text-align:center;padding:20px 16px}
+.hero__stat+.hero__stat{border-left:1px solid rgba(255,255,255,.06)}
+.hero__stat-num{font-size:clamp(16px,1.6vw,20px);font-weight:800;margin-bottom:2px}
+.hero__stat-label{font-size:12px;color:rgba(255,255,255,.4)}
+/* floating lines deco */
+.hero__deco{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero__deco span{position:absolute;display:block;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.04),transparent);animation:hdeco 8s linear infinite}
+.hero__deco span:nth-child(1){left:10%;height:60%;top:-20%;animation-delay:0s}
+.hero__deco span:nth-child(2){left:30%;height:80%;top:-30%;animation-delay:2s}
+.hero__deco span:nth-child(3){left:55%;height:50%;top:-10%;animation-delay:4s}
+.hero__deco span:nth-child(4){left:75%;height:70%;top:-25%;animation-delay:1s}
+.hero__deco span:nth-child(5){left:90%;height:55%;top:-15%;animation-delay:3s}
+@keyframes hdeco{0%{transform:translateY(-100%)}100%{transform:translateY(200%)}}
 
 /* SPEEDBAR */
 .speedbar{background:var(--dark);padding:32px 0;color:#fff}
@@ -164,9 +175,9 @@
 
 /* RESPONSIVE */
 @media(max-width:900px){
-  .hero{padding:100px 0 48px;min-height:auto}
-  .hero__grid{grid-template-columns:1fr}
-  .hero__visual{display:none}
+  .hero{min-height:100vh}
+  .hero__stats-inner{grid-template-columns:1fr}
+  .hero__stat+.hero__stat{border-left:none;border-top:1px solid rgba(255,255,255,.06)}
   .gc-grid{grid-template-columns:1fr 1fr}
   .ft-grid,.team-grid{grid-template-columns:1fr}
   .price-grid,.scen-grid{grid-template-columns:1fr}
@@ -176,10 +187,10 @@
   .speedbar__item+.speedbar__item{border-left:none;border-top:1px solid #1e293b}
 }
 @media(max-width:520px){
-  .hero{padding:84px 0 36px}
   .gc-grid{grid-template-columns:1fr}
   .hero__ctas{flex-direction:column;max-width:300px}
   .hero__ctas .btn{width:100%}
+  .hero__stats{display:none}
 }
 </style>
 </head>
@@ -233,48 +244,27 @@
 
 <!-- 1. HERO -->
 <section class="hero">
-  <div class="container">
-    <div class="hero__grid">
-      <div class="hero__text">
-        <div class="hero__tag">명도소송 전문 법무법인 인성</div>
-        <h1 class="hero__title t-h1" id="heroTitle">상담은 길게,<br><span class="t-primary">소송은 짧게.</span></h1>
-        <p class="hero__sub" id="heroSub">일단 상담부터 받으세요.
+  <div class="hero__deco"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="container hero__content">
+    <h1 class="hero__title" id="heroTitle">상담은 길게,<br><span class="hl">소송은 짧게.</span></h1>
+    <p class="hero__sub" id="heroSub">일단 상담부터 받으세요.
 짐빼는 상담은 길게, 소송은 짧게 진행해드립니다.</p>
-        <div class="hero__ctas">
-          <a href="contact.html" class="btn btn--primary">카카오톡 상담하기</a>
-          <a href="#process" class="btn btn--outline">진행절차 보기</a>
-        </div>
-        <p class="hero__price">명도소송 <strong>150만원</strong>부터 · 가처분 포함 <strong>220만원</strong> · 변호사 직접 담당</p>
-      </div>
-      <div class="hero__visual">
-        <div class="hero__vcard">
-          <div class="hero__vcard__num">36시간</div>
-          <div class="hero__vcard__label">계약 후 법원 접수까지<br>못 지키면 수임료 전액 환불</div>
-        </div>
-        <div class="hero__vcard hero__vcard--accent">
-          <div class="hero__vcard__num">150만원~</div>
-          <div class="hero__vcard__label">명도소송 본안 · 변호사 직접 담당<br>승소 시 상대방에게 비용 청구 가능</div>
-        </div>
-        <div class="hero__vcard">
-          <div class="hero__vcard__num">15분 이내</div>
-          <div class="hero__vcard__label">평일 카카오톡 응답<br>저녁 8시까지 운영</div>
-        </div>
-      </div>
+    <div class="hero__ctas">
+      <a href="contact.html" class="btn btn--w">카카오톡 상담하기</a>
+      <a href="#process" class="btn btn--ghost-w">진행절차 보기</a>
+    </div>
+    <p class="hero__price">명도소송 <strong>150만원</strong>부터 · 가처분 포함 <strong>220만원</strong> · 변호사 직접 담당</p>
+  </div>
+  <div class="hero__stats">
+    <div class="hero__stats-inner">
+      <div class="hero__stat"><div class="hero__stat-num">36시간 이내</div><div class="hero__stat-label">계약 후 법원 접수</div></div>
+      <div class="hero__stat"><div class="hero__stat-num">15분 이내</div><div class="hero__stat-label">평일 카톡 응답</div></div>
+      <div class="hero__stat"><div class="hero__stat-num">전액 환불</div><div class="hero__stat-label">접수 지연 시</div></div>
     </div>
   </div>
 </section>
 
-<!-- 2. STATS BAR -->
-<div class="speedbar">
-  <div class="container">
-    <div class="speedbar__grid reveal">
-      <div class="speedbar__item"><div class="speedbar__num">36시간 이내</div><div class="speedbar__label">계약 후 법원 접수</div></div>
-      <div class="speedbar__item"><div class="speedbar__num">15분 이내</div><div class="speedbar__label">평일 카톡 응답 (저녁 8시까지)</div></div>
-      <div class="speedbar__item"><div class="speedbar__num">전액 환불</div><div class="speedbar__label">접수 지연 시 수임료</div></div>
-    </div>
-    <p class="speedbar__note reveal">돈 쓰고 오래 기다리면 그 전이랑 달라진 게 없습니다.<br>빠르게 집행하고 정확하게 보고드립니다.</p>
-  </div>
-</div>
+
 
 <!-- 3. PROBLEM -->
 <section class="section" id="about">
@@ -517,6 +507,10 @@
 /* Loading */
 !function(){var n=0,iv=setInterval(function(){n+=Math.floor(Math.random()*5)+2;if(n>100)n=100;if(n>=100)clearInterval(iv)},40);setTimeout(function(){n=100;clearInterval(iv)},1600);setTimeout(function(){document.getElementById('loading').classList.add('done')},1800)}();
 
+/* Nav scroll */
+!function(){var nav=document.querySelector('.nav'),hero=document.querySelector('.hero');
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>hero.offsetHeight-80)},{ passive:true })}();
+
 /* Mobile menu */
 document.getElementById('navMobile').addEventListener('click',function(){document.getElementById('mobileMenu').classList.toggle('active')});
 
@@ -530,9 +524,9 @@ document.querySelectorAll('.faq-item__q').forEach(function(q){q.addEventListener
 /* Hero rotation */
 !function(){
 var titles=[
-  '상담은 길게,<br><span class="t-primary">소송은 짧게.</span>',
-  '보증금이라도 있을 때<br><span class="t-primary">시작하셔야 합니다.</span>',
-  '소송비용은<br><span class="t-primary">세입자가 낼 겁니다.</span>'
+  '상담은 길게,<br><span class="hl">소송은 짧게.</span>',
+  '보증금이라도 있을 때<br><span class="hl">시작하셔야 합니다.</span>',
+  '소송비용은<br><span class="hl">세입자가 낼 겁니다.</span>'
 ];
 var subs=[
   '일단 상담부터 받으세요.\n짐빼는 상담은 길게, 소송은 짧게 진행해드립니다.',
